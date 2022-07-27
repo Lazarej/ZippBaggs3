@@ -45,11 +45,11 @@
             <h4>{{ categorie.attributes.name }}</h4>
             <nuxt-link
               class="nav-link"
-              :to="`/produits/${produit.id}`"
+              :to="`/produits/${produit.attributes.slug}`"
               v-for="(produit, id) in categorie.attributes.produits.data"
               :key="id"
             >
-              <p>{{ produit.attributes.name }} / {{produit.id}}</p>
+              <p>{{ produit.attributes.name }}</p>
             </nuxt-link>
           </div>
         </div>
@@ -61,8 +61,9 @@
           ></div>
           
             <div class="nav-slide" :class="{active: showSlide}"></div>
-          <Search/>
         </div>
+
+        <nuxt-link to="/search">Search Page</nuxt-link>
       </div>
     </div>
   </div>
@@ -74,7 +75,7 @@ export default {
   components: { Search },
   async setup() {
     const { data: response } = await useFetch(
-      "http://localhost:1337/api/categories?populate=*"
+      "http://localhost:1337/api/categories?populate=*" 
     );
     const categories = response._rawValue.data
 

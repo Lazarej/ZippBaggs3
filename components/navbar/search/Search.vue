@@ -9,7 +9,7 @@
       <button @click="filter">click</button>
     </div>
     <div v-for="(produit, id) in produits" :key="id">
-      <p>{{ produit }}</p>
+      <p>{{ }}</p>
     </div>
   </div>
 </template>
@@ -23,12 +23,12 @@ export default {
     const URL = 'http://localhost:1337/api/produits/'
 
     async function filter(searchText) {
-     const grabData = await fetch(URL + searchText.value);
+     const grabData = await fetch(URL + searchText.value +'?populate=*');
      
-     const json = grabData.json();
+     const json = await grabData.json();
      console.log(grabData)
-     produits.value = json;
-     console.log(produit.value)
+     produits.value = json.data.attributes;
+     console.log(produits)
      
     }
 

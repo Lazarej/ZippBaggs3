@@ -10,12 +10,12 @@ export default {
 
     const produit = ref([])
 
-    const name = route.params.id
+    const name = route.params.slug
 
    onMounted(async () =>{
     console.log('mounted')
     const fetchData = await fetch(
-      `http://localhost:1337/api/produits/${route.params.id}?populate=*`
+      `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
      
     );
 
