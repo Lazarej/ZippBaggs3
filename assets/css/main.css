@@ -1,0 +1,78 @@
+@font-face {
+    font-family: 'Monument';
+    src: url('../fonts/MonumentExtended-Regular.otf');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'MonumentB';
+    src: url('../fonts/MonumentExtended-Ultrabold.otf');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Lektorat';
+    src: url('../fonts/Lektorat-CondensedBold.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'RobotoC';
+    src: url('../fonts/RobotoCondensed-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  *{
+      margin: 0;
+      cursor: url('../img/mouse.png'), auto;
+      
+  }
+  
+  a{
+    text-decoration: none;
+  }
+  
+  ::-webkit-scrollbar{
+    background-color: #FEFFFE;
+    width: 7px;
+  }
+  
+  ::-webkit-scrollbar-thumb{
+    background-color: #3f8f52;
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-track{
+    background-color: #C7CEC5;
+    border-radius: 5px;
+  }
+  
+  body{
+      background-color: #FEFFFE;
+      
+      
+  }
+  
+  h1,h2,h3{
+      color: #2C2C29;
+      
+  }
+  
+  h2,h3{
+   font-family: "Lektorat";
+   font-size: 40px;
+   text-transform: uppercase;
+   letter-spacing: -0.035em;
+      
+  }

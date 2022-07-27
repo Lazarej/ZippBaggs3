@@ -1,0 +1,97 @@
+{
+  "categories": [
+    {
+      "name": "Baggs",
+      "image": "https://picsum.photos/200/300",
+      "description": "Le maires de la ville a élu ce bon vieux Tom comme deputé car il est fin négociateur et aussi peu scupuleux qu'un nazi",
+      "produits": [
+        {
+          "name": "DragonBall",
+          "image": "https://picsum.photos/400/300",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 587,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Rick&Morty",
+          "image": "https://picsum.photos/400/400",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 597,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Hunter X Hunter",
+          "image": "https://picsum.photos/400/500",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 787,
+          "quantitéEnStock": "1000"
+        }
+      ]
+    },
+    {
+      "name": "Grinder",
+      "image": "https://picsum.photos/475/300",
+      "description": "Le maires de la ville a élu ce bon vieux Tom comme deputé car il est fin négociateur et aussi peu scupuleux qu'un nazi",
+      "produits": [
+        {
+          "name": "DragonBall",
+          "image": "https://picsum.photos/400/350",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 187,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Rick&Morty",
+          "image": "https://picsum.photos/400/450",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 1587,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Hunter X Hunter",
+          "image": "https://picsum.photos/400/550",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 5870000,
+          "quantitéEnStock": "1000"
+        }
+      ]
+    },
+    {
+      "name": "Coupe chichon",
+      "image": "https://picsum.photos/200/370",
+      "description": "Le maires de la ville a élu ce bon vieux Tom comme deputé car il est fin négociateur et aussi peu scupuleux qu'un nazi",
+      "produits": [
+        {
+          "name": "DragonBall",
+          "image": "https://picsum.photos/400/370",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 5287,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Rick&Morty",
+          "image": "https://picsum.photos/400/470",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "prix": "10 C",
+          "vendu": 87,
+          "quantitéEnStock": "1000"
+        },
+        {
+          "name": "Hunter X Hunter",
+          "image": "https://picsum.photos/400/570",
+          "description": "Idéal pour le bon shit gras qui colle au packson , il est dit dans un tres vieille legende que Bob Marley lui meme a confectionné ce packson a partir de ces propres chevveux",
+          "vendu": 5387,
+          "prix": "10 C",
+          "quantitéEnStock": "1000"
+        }
+      ]
+    }
+  ]
+}
