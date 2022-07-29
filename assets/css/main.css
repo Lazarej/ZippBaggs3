@@ -18,6 +18,13 @@
     font-weight: normal;
     font-style: normal;
   }
+
+  @font-face {
+    font-family: 'LektoratL';
+    src: url('../fonts/Lektorat-CondensedRegular.ttf');
+    font-weight: normal;
+    font-style: normal;
+  }
   
   @font-face {
     font-family: 'RobotoC';
@@ -60,7 +67,6 @@
   
   body{
       background-color: #FEFFFE;
-      
       
   }
   

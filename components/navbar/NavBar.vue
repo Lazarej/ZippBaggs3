@@ -144,7 +144,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 80px;
+  min-height: 10vh;
   background-color: #fefffe;
 }
 
@@ -153,7 +153,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 80px;
+  height: 10vh;
 }
 
 .nav-aligner {
