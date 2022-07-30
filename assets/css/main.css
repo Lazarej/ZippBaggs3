@@ -45,33 +45,40 @@
       cursor: url('../img/mouse.png'), auto;
       
   }
+
+  :root{
+    --primary: #3f8f52;
+    --secondary: #c7cec5;
+    --background: #FEFFFE;
+    --text: #2C2C29;
+  }
   
   a{
     text-decoration: none;
   }
   
   ::-webkit-scrollbar{
-    background-color: #FEFFFE;
+    background-color: var(--background) ;
     width: 7px;
   }
   
   ::-webkit-scrollbar-thumb{
-    background-color: #3f8f52;
+    background-color: var(--primary) ;
     border-radius: 5px;
   }
   
   ::-webkit-scrollbar-track{
-    background-color: #C7CEC5;
+    background-color: var(--secondary) ;
     border-radius: 5px;
   }
   
   body{
-      background-color: #FEFFFE;
+      background-color: var(--background) ;
       
   }
   
   h1,h2,h3{
-      color: #2C2C29;
+      color: var(--text);
       
   }
   
