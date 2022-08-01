@@ -10,5 +10,8 @@ export interface DisplayCart {
     price: number,
     currency: string,
     qty: number,
-    inStock: boolean
+    image:string
+    inStock: boolean,
+    id:number,
+    reste: number
 }

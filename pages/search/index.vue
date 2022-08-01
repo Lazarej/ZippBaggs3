@@ -17,7 +17,7 @@
               <div
               class="card-image"
               :style="{
-                background: `url(http://localhost:1337${filter.attributes.images.data[1].attributes.url}) center /cover no-repeat`,
+                background: `url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`,
               }"
             >
               

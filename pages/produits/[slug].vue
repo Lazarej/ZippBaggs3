@@ -91,7 +91,6 @@ export default {
 
     const add = () => {
       store.addToCart({id: id.value, qty: quantity.value})
-      console.log('cart', cart.value )
     };
 
     const seeImg = (indexImg) => {
