@@ -27,9 +27,16 @@
         </nuxt-link>
       </div>
       <div class="svg-container">
-        <div class="nav-svg search"></div>
-        <div class="nav-svg account"></div>
-        <div class="nav-svg bagg"></div>
+        <nuxt-link to="/search">
+          <div class="nav-svg search"></div>
+        </nuxt-link>
+        <nuxt-link to="">
+          <div class="nav-svg account"></div>
+        </nuxt-link>
+        <nuxt-link to="/cart">   
+          <div class="nav-svg bagg"></div>
+        </nuxt-link>
+        
       </div>
     </div>
     <div class="nav-bar-under" :class="{ 'nav-active-1': navActive }">
@@ -63,7 +70,7 @@
             <div class="nav-slide" :class="{active: showSlide}"></div>
         </div>
 
-        <nuxt-link to="/search">Search Page</nuxt-link>
+        
       </div>
     </div>
   </div>

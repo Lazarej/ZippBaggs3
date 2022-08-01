@@ -90,9 +90,6 @@ text-transform: uppercase;
   width: 55%;
 }
 
-.d-container iframe:hover{
-  cursor: url('~assets/img/mouse.png'), auto;
-}
 
 .vermine{
   position: absolute;

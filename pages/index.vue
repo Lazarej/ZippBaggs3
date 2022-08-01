@@ -2,8 +2,6 @@
   <div>
     <Presentation/>
     <Selection/>
-    fezfezfez
-    dzdzad dzadza
   </div>
 </template>
 
