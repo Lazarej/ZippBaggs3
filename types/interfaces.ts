@@ -14,4 +14,5 @@ export interface DisplayCart {
     inStock: boolean,
     id:number,
     reste: number
+    total: number
 }

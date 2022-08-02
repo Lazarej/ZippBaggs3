@@ -77,9 +77,8 @@
 </template>
 
 <script>
-import Search from "../../components/navbar/search/search.vue";
+
 export default {
-  components: { Search },
   async setup() {
     const { data: response } = await useFetch(
       "http://localhost:1337/api/categories?populate=*" 
@@ -238,37 +237,37 @@ export default {
 }
 
 .search {
-  background: url("../../assets/svg/search.svg") center center / 28px 28px
+  background: url("../../../assets/svg/search.svg") center center / 28px 28px
     no-repeat;
   transition: 0.3s;
 }
 
 .search:hover {
-  background: url("../../assets/svg/searchHover.svg") center center / 28px 28px
+  background: url("../../../assets/svg/searchHover.svg") center center / 28px 28px
     no-repeat;
   cursor: pointer;
 }
 
 .account {
-  background: url("../../assets/svg/account.svg") center center / 28px 28px
+  background: url("../../../assets/svg/account.svg") center center / 28px 28px
     no-repeat;
   transition: 0.3s;
 }
 
 .account:hover {
-  background: url("../../assets/svg/accountHover.svg") center center / 28px 28px
+  background: url("../../../assets/svg/accountHover.svg") center center / 28px 28px
     no-repeat;
   cursor: pointer;
 }
 
 .bagg {
-  background: url("../../assets/svg/bagg.svg") center center / 28px 28px
+  background: url("../../../assets/svg/bagg.svg") center center / 28px 28px
     no-repeat;
   transition: 0.3s;
 }
 
 .bagg:hover {
-  background: url("../../assets/svg/baggHover.svg") center center / 28px 28px
+  background: url("../../../assets/svg/baggHover.svg") center center / 28px 28px
     no-repeat;
   cursor: pointer;
 }

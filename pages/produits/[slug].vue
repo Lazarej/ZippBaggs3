@@ -1,10 +1,14 @@
 <template>
-  <div class="page-cont">
-    <div class="produit-page">
+  <Wrapper>
+    <div class="prod-page">
       <div class="part-left">
         <div class="text-for-product">
-           <h3>Nos produits</h3>
-           <p>Nos produits sont des produits vraiment super nous adorons les mettre en avant car ils sont super , je pense tres honnetement que vous ne vous rendez pas compte a quel point ils sont super mega cool </p>
+          <h3>Nos produits</h3>
+          <p>
+            Nos produits sont des produits vraiment super nous adorons les
+            mettre en avant car ils sont super , je pense tres honnetement que
+            vous ne vous rendez pas compte a quel point ils sont super mega cool
+          </p>
         </div>
         <div class="part-left-rel-cont">
           <div class="image-selection">
@@ -56,12 +60,17 @@
             <p class="price">{{ produit.price }} EUR</p>
 
             <div class="multi-select">
-              <select class="select" name="quantity" id="quantity" v-model="quantity">
+              <select
+                class="select"
+                name="quantity"
+                id="quantity"
+                v-model="quantity"
+              >
                 <option value="1">1</option>
                 <option v-if="produit.quantity > 10" :value="10">10</option>
                 <option v-if="produit.quantity > 20" :value="20">20</option>
                 <option v-if="produit.quantity > 40" :value="40">40</option>
-                <option  v-if="produit.quantity > 100" :value="100">100</option>
+                <option v-if="produit.quantity > 100" :value="100">100</option>
               </select>
             </div>
           </div>
@@ -69,16 +78,18 @@
         </div>
       </div>
     </div>
-  </div>
+  </Wrapper>
 </template>
 
 <script>
-import { storeToRefs } from 'pinia';
-import { useCartStore } from '../../store/cart'
+import { storeToRefs } from "pinia";
+import { useCartStore } from "../../store/cart";
+import Wrapper from "../../components/global/wrapper.vue";
 export default {
+  components: { Wrapper },
 
   setup() {
-    const store = useCartStore()
+    const store = useCartStore();
     const route = useRoute();
     const produit = ref([]);
     const index = ref(0);
@@ -86,11 +97,11 @@ export default {
     const direction = ref("");
     const progress = ref();
     const quantity = ref(1);
-    const id = ref()
-    const {cart} =  storeToRefs(store)
-
+    const id = ref();
+    const { cart } = storeToRefs(store);
+    const path = route.path
     const add = () => {
-      store.addToCart({id: id.value, qty: quantity.value})
+      store.addToCart({ id: id.value, qty: quantity.value },path);
     };
 
     const seeImg = (indexImg) => {
@@ -100,19 +111,17 @@ export default {
       index.value = indexImg;
       progress.value = (100 / images.value.length) * (index.value + 1);
       iComp.transform = `translateY(-${index.value * heightI}px)`;
-
-      
     };
 
     onMounted(async () => {
-      store.loadCartInstance()
+      store.loadCartInstance();
       const fetchData = await fetch(
         `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
       );
       const json = await fetchData.json();
       produit.value = json.data.attributes;
       images.value = produit.value.images.data;
-      id.value = json.data.id
+      id.value = json.data.id;
       images.value.forEach((image, index) => {
         image.index = index;
       });
@@ -159,27 +168,18 @@ export default {
       quantity,
       add,
       store,
-      id
+      id,
     };
   },
 };
 </script>
 
 <style lang="css" scoped>
-.page-cont {
-  height: 100vh;
+.prod-page {
+  height: 100%;
   width: 100%;
   display: flex;
-  align-items: flex-end;
 }
-.produit-page {
-  height: calc(100% - 17vh);
-  width: 90%;
-  padding: 0 5% 7vh 5%;
-
-  display: flex;
-}
-
 .part-left {
   height: 100%;
   width: 60%;
@@ -191,25 +191,23 @@ export default {
   overflow: hidden;
 }
 
-.text-for-product{
+.text-for-product {
   width: 150px;
-
 }
 
-.text-for-product h3{
+.text-for-product h3 {
   font-size: 24px;
   margin-bottom: 20px;
   line-height: 90%;
   font-family: "Nimbus";
 }
 
-.text-for-product p{
+.text-for-product p {
   font-family: "Montserrat";
   font-size: 12px;
   letter-spacing: -1px;
   line-height: 17px;
-  color: rgb(111, 111, 111);
-
+  color: var(--text);
 }
 
 .part-left-rel-cont {
@@ -255,7 +253,7 @@ export default {
   width: 100%;
   height: 0%;
   transform-origin: top;
-  background: var(--text);
+  background: var(--title);
   transition: 0.5s ease-in-out;
 }
 
@@ -313,13 +311,13 @@ export default {
   font-size: 13px;
   letter-spacing: -1px;
   line-height: 20px;
-  color: rgb(111, 111, 111);
+  color: var(--text);
 }
 
 .price {
   font-size: 13px;
   font-family: "Nimbus";
-  color: rgb(111, 111, 111);
+  color:var(--text);
   margin-bottom: 20px;
 }
 
@@ -338,14 +336,14 @@ export default {
 .select {
   width: 80px;
   height: 40px;
-  border: 1px solid #c7cec5;
+  border: 1px solid var(--secondary);
   outline: none;
 }
 
 .select:focus-visible {
   width: 80px;
   height: 40px;
-  border: 1px solid #c7cec5;
+  border: 1px solid var(--secondary);
   outline: none;
 }
 

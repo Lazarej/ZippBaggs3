@@ -71,7 +71,8 @@
     --primary: #3f8f52;
     --secondary: #c7cec5;
     --background: #FEFFFE;
-    --text: #2C2C29;
+    --title: #2C2C29;
+    --text:rgb(111, 111, 111)
   }
   
   a{
@@ -99,7 +100,7 @@
   }
   
   h1,h2,h3{
-      color: var(--text);
+      color: var(--title);
       
   }
   

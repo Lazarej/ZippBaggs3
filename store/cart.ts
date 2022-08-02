@@ -27,7 +27,8 @@ export const useCartStore = defineStore("cart", {
       if (!cs) this.cart = {};
       else this.cart = JSON.parse(cs);
     },
-    addToCart(product: Product,) {
+    addToCart(product: Product, path) {
+      console.log(path)
       const cs = localStorage.getItem("cart");
       let isAdded = false;
       if (!cs)
@@ -42,10 +43,17 @@ export const useCartStore = defineStore("cart", {
             
             if (ci.id == product.id) {
               isAdded = true;
-              return { id: ci.id, qty: ci.qty + product.qty };
-            }
+              if(path === '/cart'){
+                return { id: ci.id, qty:  product.qty };
+              }else{
+                return { id: ci.id, qty: ci.qty + product.qty };
+              }
+             
+            }console.log(ci.qty)
             return { id: ci.id, qty: ci.qty };
+            
           }
+          
         );
 
         if (!isAdded)
@@ -81,7 +89,8 @@ export const useCartStore = defineStore("cart", {
             image: requiredProduct[0].attributes.images.data[0].attributes.url,
             inStock:
               requiredProduct[0].attributes.quantity >= ci.qty ? true : false,
-              reste: requiredProduct[0].attributes.quantity - ci.qty 
+              reste: requiredProduct[0].attributes.quantity - ci.qty,
+              total: requiredProduct[0].attributes.price * ci.qty,
           };
           
       });
