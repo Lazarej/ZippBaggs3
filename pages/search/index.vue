@@ -20,7 +20,6 @@
                 background: `url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`,
               }"
             >
-              
             </div>
             </div>
             <div class="info-card">
@@ -42,26 +41,20 @@ export default {
     const filters = ref([]);
     const test = ref("test");
     const message = ref("");
-    const URL = "http://localhost:1337/api/produits/";
+    const URL = "http://localhost:1337/api/produits?filters[slug][$contains]=";
 
     onMounted(async () => {
-      const grabData = await fetch(URL + "?populate=*");
-
-      const json = await grabData.json();
-
-      produits.value = json.data;
     });
 
     watch(
       () => searchText.value,
-      (old, notOld) => {
+      async (old, notOld)  =>  {
         if (searchText.value.length !== 0) {
-          console.log(filters.value);
-          filters.value = produits.value.filter((el) =>
-            el.attributes.name
-              .toLowerCase()
-              .includes(searchText.value.toLowerCase())
-          );
+          const grabData = await fetch(URL + searchText.value +'&populate=images' );
+
+      const json = await grabData.json();
+          filters.value = json.data
+          console.log(filters.value)
 
           if (filters.value.length === 0) {
             message.value = "Aucun produit trouvé";

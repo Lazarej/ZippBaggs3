@@ -6,18 +6,18 @@
     </div>
     <div class="cart-cont">
       <div class="card" v-for="(item, index) in displayCart" :key="index">
-      <div class="title-card-cont">
-          <p>{{item.name}}</p>
-      </div>
-       <div class="img-info">
-         <div
-          class="image"
-          :style="{
-            background: `url(http://localhost:1337${item.image}) center /cover no-repeat`,
-          }"
-        ></div>
-        <div class="info-card-cont">   
-          <div class="multi-select">
+        <div class="title-card-cont">
+          <p>{{ item.name }}</p>
+        </div>
+        <div class="img-info">
+          <div
+            class="image"
+            :style="{
+              background: `url(http://localhost:1337${item.image}) center /cover no-repeat`,
+            }"
+          ></div>
+          <div class="info-card-cont">
+            <div class="multi-select">
               <select
                 class="select"
                 name="quantity"
@@ -32,11 +32,14 @@
                 <option v-if="item.reste > 100" :value="100">100</option>
               </select>
             </div>
-          <p> {{item.total}} EUR</p>
-          <p class="delete-btn" @click="removeItem(item.id, productData)">Supprimer</p>
-        </div>          
-       </div>
+            <p>{{ item.total }} EUR</p>
+            <p class="delete-btn" @click="removeItem(item.id, productData)">
+              Supprimer
+            </p>
+          </div>
+        </div>
       </div>
+      total:{{total}}
     </div>
   </Wrapper>
 </template>
@@ -48,27 +51,22 @@ import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
 const store = useCartStore();
 const { cart, displayCart } = storeToRefs(store);
-const path = useRoute().path
-
-const total = computed(() => {
-  displayCart.value.forEach((el)=> el[0])
-})
+const path = useRoute().path;
 
 const { data: grabData } = await useFetch(
   "http://localhost:1337/api/produits/?populate=*"
 );
 const productData = grabData.value.data;
+
 onMounted(async () => {
   store.loadCartInstance();
   store.displayCartLoad(productData);
-  console.log(displayCart.value.forEach((el)=> console.log(el.price)))
-  
+  console.log((displayCart.value as DisplayCart[]).forEach((el) => console.log(el.price)));
 });
 
-const changeCount = (item)=>{
-  store.addToCart({ id: item.id, qty: item.qty},path);}
-
-
+const changeCount = (item) => {
+  store.addToCart({ id: item.id, qty: item.qty }, path);
+};
 
 const removeItem = (id: number, productData) => {
   console.log(id);
@@ -108,15 +106,15 @@ const removeItem = (id: number, productData) => {
   margin-right: 40px;
 }
 
-.title-card-cont{
+.title-card-cont {
   height: 10%;
   width: 70%;
   display: flex;
   align-items: flex-end;
 }
 
-.title-card-cont p{
-  font-family: 'Nimbus';
+.title-card-cont p {
+  font-family: "Nimbus";
   text-transform: uppercase;
   font-size: 24px;
   line-height: 90%;
@@ -124,11 +122,10 @@ const removeItem = (id: number, productData) => {
   letter-spacing: -0.035em;
 }
 
-.img-info{
+.img-info {
   display: flex;
   width: 100%;
   height: 90%;
-
 }
 .image {
   width: 70%;
@@ -138,10 +135,10 @@ const removeItem = (id: number, productData) => {
 .info-card-cont {
   height: 100%;
   width: 20%;
-  margin-left:15px;
+  margin-left: 15px;
   display: flex;
   flex-direction: column;
-  font-family: 'Nimbus';
+  font-family: "Nimbus";
   color: var(--title);
   font-size: 13px;
   justify-content: space-between;
@@ -174,12 +171,10 @@ const removeItem = (id: number, productData) => {
   border: none;
 }
 
-
-.delete-btn{
+.delete-btn {
   font-size: 14px;
   border: none;
   font-family: "Roboto";
   text-transform: uppercase;
 }
-
 </style>
