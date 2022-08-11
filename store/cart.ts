@@ -14,9 +14,6 @@ export const useCartStore = defineStore("cart", {
   state: () => ({ cart: {}, displayCart: {} } as State),
   getters: {
     
-    
-  
-
   },
   actions: {
 
@@ -28,7 +25,7 @@ export const useCartStore = defineStore("cart", {
       else this.cart = JSON.parse(cs);
     },
     addToCart(product: Product, path) {
-      console.log(path)
+
       const cs = localStorage.getItem("cart");
       let isAdded = false;
       if (!cs)
@@ -49,7 +46,7 @@ export const useCartStore = defineStore("cart", {
                 return { id: ci.id, qty: ci.qty + product.qty };
               }
              
-            }console.log(ci.qty)
+            }
             return { id: ci.id, qty: ci.qty };
             
           }

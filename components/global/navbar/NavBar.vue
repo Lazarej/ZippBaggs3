@@ -30,7 +30,7 @@
         <nuxt-link to="/search">
           <div class="nav-svg search"></div>
         </nuxt-link>
-        <nuxt-link to="">
+        <nuxt-link to="/user">
           <div class="nav-svg account"></div>
         </nuxt-link>
         <nuxt-link to="/cart">   

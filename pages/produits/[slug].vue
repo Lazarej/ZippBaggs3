@@ -66,7 +66,7 @@
                 id="quantity"
                 v-model="quantity"
               >
-                <option value="1">1</option>
+                <option :value="1">1</option>
                 <option v-if="produit.quantity > 10" :value="10">10</option>
                 <option v-if="produit.quantity > 20" :value="20">20</option>
                 <option v-if="produit.quantity > 40" :value="40">40</option>

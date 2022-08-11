@@ -2,44 +2,54 @@
   <Wrapper>
     <div class="header-cart-page">
       <h2>Panier</h2>
+
       <span class="count">({{ displayCart.length }})</span>
     </div>
     <div class="cart-cont">
-      <div class="card" v-for="(item, index) in displayCart" :key="index">
-        <div class="title-card-cont">
-          <p>{{ item.name }}</p>
-        </div>
-        <div class="img-info">
-          <div
-            class="image"
-            :style="{
-              background: `url(http://localhost:1337${item.image}) center /cover no-repeat`,
-            }"
-          ></div>
-          <div class="info-card-cont">
-            <div class="multi-select">
-              <select
-                class="select"
-                name="quantity"
-                id="quantity"
-                v-model="item.qty"
-                @change="changeCount(item)"
-              >
-                <option v-if="item.reste > 1" :value="1">1</option>
-                <option v-if="item.reste > 10" :value="10">10</option>
-                <option v-if="item.reste > 20" :value="20">20</option>
-                <option v-if="item.reste > 40" :value="40">40</option>
-                <option v-if="item.reste > 100" :value="100">100</option>
-              </select>
+      <div class="slider-cont">
+        <div class="card" v-for="(item, index) in displayCart" :key="index">
+          <div class="title-card-cont">
+            <p>{{ item.name }}</p>
+          </div>
+          <div class="img-info">
+            <div
+              class="image"
+              :style="{
+                background: `url(http://localhost:1337${item.image}) center /cover no-repeat`,
+              }"
+            ></div>
+            <div class="info-card-cont">
+              <div class="multi-select">
+                <select
+                  class="select"
+                  name="quantity"
+                  id="quantity"
+                  v-model="item.qty"
+                  @change="changeCount(item)"
+                >
+                  <option v-if="item.reste > 1" :value="1">1</option>
+                  <option v-if="item.reste > 10" :value="10">10</option>
+                  <option v-if="item.reste > 20" :value="20">20</option>
+                  <option v-if="item.reste > 40" :value="40">40</option>
+                  <option v-if="item.reste > 100" :value="100">100</option>
+                </select>
+              </div>
+              <p>{{ item.price * item.qty }} EUR</p>
+              <p class="delete-btn" @click="removeItem(item.id, productData)">
+                Supprimer
+              </p>
             </div>
-            <p>{{ item.total }} EUR</p>
-            <p class="delete-btn" @click="removeItem(item.id, productData)">
-              Supprimer
-            </p>
           </div>
         </div>
       </div>
-      total:{{total}}
+    </div>
+    <div class="total-buy">
+      <div class="btn-total">
+        <p>
+          total: <span> {{ total2 }} EUR</span>
+        </p>
+        <button>Achetez</button>
+      </div>
     </div>
   </Wrapper>
 </template>
@@ -49,9 +59,17 @@ import { storeToRefs } from "pinia";
 import { useCartStore } from "../../store/cart";
 import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
+
 const store = useCartStore();
 const { cart, displayCart } = storeToRefs(store);
 const path = useRoute().path;
+const total2 = ref(0);
+computed(() => {
+  let sum = displayCart.value.forEach((item) => {
+    total2.value = total2.value + item.price * item.qty;
+  });
+  return sum;
+});
 
 const { data: grabData } = await useFetch(
   "http://localhost:1337/api/produits/?populate=*"
@@ -61,7 +79,9 @@ const productData = grabData.value.data;
 onMounted(async () => {
   store.loadCartInstance();
   store.displayCartLoad(productData);
-  console.log((displayCart.value as DisplayCart[]).forEach((el) => console.log(el.price)));
+  displayCart.value.forEach((item) => {
+    total2.value = total2.value + item.price * item.qty;
+  });
 });
 
 const changeCount = (item) => {
@@ -93,16 +113,31 @@ const removeItem = (id: number, productData) => {
   font-family: "Monument";
   color: var(--title);
 }
+
 .cart-cont {
   display: flex;
-  height: 65%;
+  height: 75%;
   align-items: flex-end;
+  overflow: hidden;
+  overflow-x:scroll;
+  margin-bottom: 20px;
+}
+
+.cart-cont::-webkit-scrollbar{
+    height: 3px;
+    
+  }
+
+.slider-cont{
+  display: flex;
+  height: 85%;
+  
 }
 .card {
   display: flex;
   flex-direction: column;
   width: 350px;
-  height: 85%;
+  height: 90%;
   margin-right: 40px;
 }
 
@@ -116,7 +151,7 @@ const removeItem = (id: number, productData) => {
 .title-card-cont p {
   font-family: "Nimbus";
   text-transform: uppercase;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 90%;
   margin-bottom: 15px;
   letter-spacing: -0.035em;
@@ -176,5 +211,35 @@ const removeItem = (id: number, productData) => {
   border: none;
   font-family: "Roboto";
   text-transform: uppercase;
+}
+
+.total-buy {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-total {
+  display: flex;
+}
+
+.btn-total button {
+  height: 50px;
+  width: 250px;
+  font-size: 16px;
+  font-family: "Roboto";
+  text-transform: uppercase;
+}
+
+.btn-total p {
+  font-size: 13px;
+  margin-right: 20px;
+  text-transform: uppercase;
+  font-family: "Nimbus";
+}
+
+.btn-total p span {
+  font-weight: 800;
 }
 </style>
