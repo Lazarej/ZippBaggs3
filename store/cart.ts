@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { v4 as uuid4 } from "uuid";
 import { Cart, Product, DisplayCart } from "../types/interfaces";
+import { userStore } from "../store/user"
 
 interface State {
   cart: Cart | {};
@@ -17,12 +18,17 @@ export const useCartStore = defineStore("cart", {
   },
   actions: {
 
-    
+     test(){
+       this.cart = {}
+       
+     },
 
     loadCartInstance() {
+
       const cs = localStorage.getItem("cart");
       if (!cs) this.cart = {};
       else this.cart = JSON.parse(cs);
+      console.log(cs)
     },
     addToCart(product: Product, path) {
 
@@ -69,8 +75,33 @@ export const useCartStore = defineStore("cart", {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    displayCartLoad(productData) {
-      
+     displayCartLoad(productData) {
+      const storeU = userStore()
+    storeU.loadUserInstance()
+      console.log(storeU.user)
+     if(storeU.user.login == true){
+      this.displayCart = storeU.user.cart.map((ci) => {
+        
+        const requiredProduct = productData.filter(
+          (p: { id: number }) => p.id == ci.id
+        );
+        /*if (requiredProduct[0].attributes.quantity >= ci.qty)*/
+          return {
+            id: ci.id,
+            name: requiredProduct[0].attributes.name,
+            price: requiredProduct[0].attributes.price,
+            qty: ci.qty,
+            currency: requiredProduct[0].attributes.currency,
+            image: requiredProduct[0].attributes.images.data[0].attributes.url,
+            inStock:
+              requiredProduct[0].attributes.quantity >= ci.qty ? true : false,
+              reste: requiredProduct[0].attributes.quantity - ci.qty,
+              total: requiredProduct[0].attributes.price * ci.qty,
+          };
+          
+      });
+
+     }else{
       this.displayCart = (this.cart as Cart).products.map((ci) => {
         
         const requiredProduct = productData.filter(
@@ -91,6 +122,7 @@ export const useCartStore = defineStore("cart", {
           };
           
       });
+     }
       
     },
     

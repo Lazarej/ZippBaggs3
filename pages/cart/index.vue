@@ -48,7 +48,7 @@
         <p>
           total: <span> {{ total2 }} EUR</span>
         </p>
-        <button>Achetez</button>
+        <button @click="test">Achetez</button>
       </div>
     </div>
   </Wrapper>
@@ -59,11 +59,13 @@ import { storeToRefs } from "pinia";
 import { useCartStore } from "../../store/cart";
 import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
-
+import { userStore } from "../../store/user";
 const store = useCartStore();
+const storeU = userStore();
 const { cart, displayCart } = storeToRefs(store);
 const path = useRoute().path;
 const total2 = ref(0);
+
 computed(() => {
   let sum = displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
@@ -78,7 +80,9 @@ const productData = grabData.value.data;
 
 onMounted(async () => {
   store.loadCartInstance();
+
   store.displayCartLoad(productData);
+
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });
@@ -87,6 +91,10 @@ onMounted(async () => {
 const changeCount = (item) => {
   store.addToCart({ id: item.id, qty: item.qty }, path);
 };
+
+const test = () => {
+  store.test()
+}
 
 const removeItem = (id: number, productData) => {
   console.log(id);
@@ -119,19 +127,17 @@ const removeItem = (id: number, productData) => {
   height: 75%;
   align-items: flex-end;
   overflow: hidden;
-  overflow-x:scroll;
+  overflow-x: scroll;
   margin-bottom: 20px;
 }
 
-.cart-cont::-webkit-scrollbar{
-    height: 3px;
-    
-  }
+.cart-cont::-webkit-scrollbar {
+  height: 3px;
+}
 
-.slider-cont{
+.slider-cont {
   display: flex;
   height: 85%;
-  
 }
 .card {
   display: flex;

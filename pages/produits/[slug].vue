@@ -101,6 +101,7 @@ export default {
     const { cart } = storeToRefs(store);
     const path = route.path
     const add = () => {
+      
       store.addToCart({ id: id.value, qty: quantity.value },path);
     };
 

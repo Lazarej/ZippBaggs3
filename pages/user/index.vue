@@ -95,155 +95,122 @@
         </p>
       </div>
       <div>
-        <button @click="send">Send</button>
+        <button @click="send"></button>
+        <button @click="logout">ouai</button>
       </div>
+      <p>{{ user.username }}</p>
     </div>
   </Wrapper>
 </template>
 
-<script>
+<script setup lang="ts">
 import Wrapper from "../../components/global/wrapper.vue";
+import { storeToRefs } from "pinia";
+import { userStore } from "../../store/user";
 
-export default {
-  components: { Wrapper },
+const store = userStore();
+const { user } = storeToRefs(store);
+const login = ref(false);
+const test = ref({});
 
-  setup() {
-    const login = ref(false);
+const validation = ref({
+  error: false,
+  errorMessages: [],
+});
 
-    const validation = ref({
-      error: false,
-      errorMessages: [],
-    });
+const formLog = ref({
+  email: "",
+  password: "",
+});
 
-    const formLog = ref({
-      email: "",
-      password: "",
-    });
+const formCreate = ref({
+  firstname: "",
+  lastname: "",
+  email: "",
+  password: "",
+  repeatPassword: "",
+});
 
-    const formCreate = ref({
-      firstname: "",
-      lastname: "",
-      email: "",
-      password: "",
-      repeatPassword: "",
-    });
+onMounted(async () => {
+  await store.loadUserInstance();
+  test.value = await user;
+  console.log(user);
+});
 
-    const getError = (index) => {
-      return validation.value.errorMessages.find((e) => {
-        return e.index === index;
+const getError = (index) => {
+  return validation.value.errorMessages.find((e) => {
+    return e.index === index;
+  });
+};
+
+const validate = () => {
+  if (login.value == true) {
+    if (formLog.value.email.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "email",
+        message: "Veuillez saisir un email",
       });
-    };
+    }
+    if (formLog.value.password.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "password",
+        message: "Veuillez saisir un mot de passe",
+      });
+    }
+  } else {
+    if (formCreate.value.firstname.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "firstname",
+        message: "Veuillez saisir un nom",
+      });
+    }
+    if (
+      (formCreate.value.password === formCreate.value.repeatPassword &&
+        formCreate.value.password.length > 5) === false
+    ) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "passwordRepeat",
+        message: "Les mots de passe ne correspondent pas",
+      });
+    }
+    if (formCreate.value.lastname.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "lastname",
+        message: "Veuillez saisir un prénom",
+      });
+    }
+    if (formCreate.value.email.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "email",
+        message: "Veuillez saisir un email",
+      });
+    }
+  }
+};
 
-    const validate = () => {
-      if (login.value == true) {
-        if (formLog.value.email.length < 1) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "email",
-            message: "Veuillez saisir un email",
-          });
-        }
-        if (formLog.value.password.length < 1) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "password",
-            message: "Veuillez saisir un mot de passe",
-          });
-        }
-      } else {
-        if (formCreate.value.firstname.length < 1) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "firstname",
-            message: "Veuillez saisir un nom",
-          });
-        }
-        if (
-          (formCreate.value.password === formCreate.value.repeatPassword &&
-            formCreate.value.password.length > 5) === false
-        ) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "passwordRepeat",
-            message: "Les mots de passe ne correspondent pas",
-          });
-        }
-        if (formCreate.value.lastname.length < 1) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "lastname",
-            message: "Veuillez saisir un prénom",
-          });
-        }
-        if (formCreate.value.email.length < 1) {
-          validation.value.error = true;
-          validation.value.errorMessages.push({
-            index: "email",
-            message: "Veuillez saisir un email",
-          });
-        }
-      }
-    };
+const send = async () => {
+  validate();
+  if (login.value == true) {
+    if (validation.value.error === false) {
+   
+      store.login(formLog.value.email, formLog.value.password);
+    }
+  } else {
+    if (validation.value.error === false) {
+   
+      store.create(formCreate.value)
+    }
+  }
+};
 
-    const send = async () => {
-      validate();
-      if (login.value == true) {
-        if (validation.value.error === false) {
-          console.log("go2");
-          const body = {
-            identifier: formLog.value.email,
-            password: formLog.value.password,
-          }
-           try {
-          const data = await fetch("http://localhost:1337/api/auth/local", {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: JSON.stringify(body),
-          })
-          
-          .then((response) => {
-            console.log(response.json());
-          });
-        } catch (error) {
-          console.error(error.response);
-        }
-          
-        }
-       
-      } else {
-        if (validation.value.error === false) {
-          console.log("go");
-          const body = {
-            username:
-              formCreate.value.firstname + " " + formCreate.value.lastname,
-            email: formCreate.value.email,
-            password: formCreate.value.password,
-          };
-          console.log(body);
-          try {
-            const data = await fetch(
-              "http://localhost:1337/api/auth/local/register?populate=*",
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                method: "POST",
-                body: JSON.stringify(body),
-              }
-            ).then((response) => {
-              console.log(response.json);
-            });
-          } catch (error) {
-            console.error(error);
-          }
-        }
-      }
-    };
-
-    return { formLog, login, formCreate, send, validate, validation, getError };
-  },
+const logout = () => {
+  store.logout();
 };
 </script>
 

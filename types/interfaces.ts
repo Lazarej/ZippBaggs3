@@ -16,3 +16,12 @@ export interface DisplayCart {
     reste: number
     total: number
 }
+
+export interface User {
+  username:String,
+  email: String,
+  token: string,
+  id:number ,
+  login:boolean,
+  cart: Array<DisplayCart>
+}
