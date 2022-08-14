@@ -93,7 +93,8 @@ const changeCount = (item) => {
 };
 
 const test = () => {
-  store.test()
+  store.$reset()
+  console.log(store.cart)
 }
 
 const removeItem = (id: number, productData) => {
