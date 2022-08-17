@@ -326,6 +326,7 @@ export default {
   height: 60px;
   font-size: 16px;
   font-family: "Roboto";
+  background: var(--background);
   text-transform: uppercase;
 }
 

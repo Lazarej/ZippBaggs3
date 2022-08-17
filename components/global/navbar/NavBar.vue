@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="nav-title-container">
-        <nuxt-link tag='a' to="/">
+        <nuxt-link tag="a" to="/">
           <h2 class="nav-title">ZippBaggs</h2>
         </nuxt-link>
       </div>
@@ -30,13 +30,16 @@
         <nuxt-link to="/search">
           <div class="nav-svg search"></div>
         </nuxt-link>
-        <nuxt-link to="/user">
+        <nuxt-link v-if="user.login === true" to="/user">
           <div class="nav-svg account"></div>
         </nuxt-link>
-        <nuxt-link to="/cart">   
+        <nuxt-link v-else to="/auth">
+          <div class="nav-svg account"></div>
+        </nuxt-link>
+        <nuxt-link to="/cart">
           <div class="nav-svg bagg"></div>
         </nuxt-link>
-        
+        <p v-if="user.login === true" @click="logout" class="logout">déconnexion</p>
       </div>
     </div>
     <div class="nav-bar-under" :class="{ 'nav-active-1': navActive }">
@@ -64,81 +67,67 @@
           <div
             class="img-categorie"
             v-if="showImage"
-            :style="{ background: `url('http://localhost:1337${imageBack}') center /cover no-repeat` }"
+            :style="{
+              background: `url('http://localhost:1337${imageBack}') center /cover no-repeat`,
+            }"
           ></div>
-          
-            <div class="nav-slide" :class="{active: showSlide}"></div>
+          <div class="nav-slide" :class="{ active: showSlide }"></div>
         </div>
-
-        
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { userStore } from "../../../store/user";
+import { storeToRefs } from "pinia";
 
-export default {
-  async setup() {
-    const { data: response } = await useFetch(
-      "http://localhost:1337/api/categories?populate=*" 
-    );
-    const categories = response._rawValue.data
+const store = userStore();
+const { user } = storeToRefs(store);
+const navActive = ref(false);
+const showImage = ref(false);
+const showSlide = ref(false);
+const imageBack = ref(false);
+const delayTransition = ref(300);
+const categories = ref([]);
 
+onMounted(async () => {
+  await store.loadUserInstance();
+  const { data: response } = await useFetch(
+    "http://localhost:1337/api/categories?populate=*"
+  );
+  categories.value = response._rawValue.data;
 
-    const navActive = ref(false);
-    const showImage = ref(false);
-    const showSlide = ref(false);
-    const imageBack = ref(false)
-    const delayTransition = ref(300);
+  console.log(user);
+});
 
-    function toggle() {
-      navActive.value = !navActive.value;
-      console.log(navActive.value);
-      showImage.value = false;
-    }
+function toggle() {
+  navActive.value = !navActive.value;
+  console.log(navActive.value);
+  showImage.value = false;
+}
 
-    function delay() {
-      return new Promise((res) => setTimeout(delayTransition.value));
-    }
-
-    function hiddenCategorieImg() {
-      console.log(this.showImage);
-      showSlide.value = false;
-      setTimeout(() => {
-        showImage.value = false;
-      }, 300);
-
-    
-    }
-
-    function showCategorieImg(categorie) {
-      if (categorie.attributes.image !== "undefined") {
-     
-     setTimeout(() => {
-          imageBack.value = categorie.attributes.image.data.attributes.url;
-         showImage.value = true;
-          showSlide.value = true;
-      }, 300);
-        
- 
-      }
-    }
-
-    return {
-      toggle,
-      delay,
-      showCategorieImg,
-      hiddenCategorieImg,
-      navActive,
-      showImage,
-      showSlide,
-      imageBack,
-      delayTransition,
-      categories,
-    };
-  },
+const logout = () => {
+  store.logout();
 };
+
+const  hiddenCategorieImg = () => {
+  console.log(showImage.value);
+  showSlide.value = false;
+  setTimeout(() => {
+    showImage.value = false;
+  }, 300);
+}
+
+ const showCategorieImg = (categorie) => {
+  if (categorie.attributes.image !== "undefined") {
+    setTimeout(() => {
+      imageBack.value = categorie.attributes.image.data.attributes.url;
+      showImage.value = true;
+      showSlide.value = true;
+    }, 300);
+  }
+}
 </script>
 
 <style lang="css" scoped>
@@ -224,16 +213,15 @@ export default {
 
 .svg-container {
   margin-right: 30px;
-  width: 200px;
-  height: 100%;
+  width: fit-content;
+  height: 50%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .nav-svg {
   height: 50px;
   width: 50px;
+  margin: 0 5px 0 0px;
 }
 
 .search {
@@ -243,8 +231,8 @@ export default {
 }
 
 .search:hover {
-  background: url("../../../assets/svg/searchHover.svg") center center / 28px 28px
-    no-repeat;
+  background: url("../../../assets/svg/searchHover.svg") center center / 28px
+    28px no-repeat;
   cursor: pointer;
 }
 
@@ -255,9 +243,17 @@ export default {
 }
 
 .account:hover {
-  background: url("../../../assets/svg/accountHover.svg") center center / 28px 28px
-    no-repeat;
+  background: url("../../../assets/svg/accountHover.svg") center center / 28px
+    28px no-repeat;
   cursor: pointer;
+}
+
+.logout {
+  font-size: 16px;
+  font-family: "Roboto";
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+  margin-top: 22px;
 }
 
 .bagg {
@@ -317,7 +313,7 @@ export default {
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  color: #626262;
+  color: var(--text);
   margin-bottom: 15px;
   text-decoration: none;
   transition: 0.3s;
@@ -328,7 +324,7 @@ export default {
   position: absolute;
   height: 1.5px;
   width: 100%;
-  background-color: #2c2c29;
+  background-color: var(--title);
   left: 0;
   top: 120%;
   transform: scaleX(0);
@@ -337,7 +333,7 @@ export default {
 }
 
 .nav-link:hover {
-  color: #2c2c29;
+  color: var(--title);
 }
 
 .nav-link p:hover:after {
@@ -350,7 +346,6 @@ export default {
   width: 400px;
 }
 .img-categorie,
-
 .nav-slide {
   background-color: #fefffe;
   position: absolute;
@@ -360,12 +355,10 @@ export default {
   width: 100%;
   height: 100%;
   transition: 0.5s;
-  
 }
 
 .active {
   width: 0%;
-
 }
 
 .slide-enter-active,

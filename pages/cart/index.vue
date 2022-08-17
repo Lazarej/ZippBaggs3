@@ -80,9 +80,9 @@ const productData = grabData.value.data;
 
 onMounted(async () => {
   store.loadCartInstance();
-
   store.displayCartLoad(productData);
-
+  console.log(store.cart)
+  console.log(displayCart)
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });

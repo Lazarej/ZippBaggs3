@@ -1,104 +1,7 @@
 <template>
   <Wrapper>
-    <div class="auth-page">
-      <form class="form form-login" v-if="login" action="">
-        <div class="input-cont">
-          <label>Email</label>
-          <input type="email" v-model="formLog.email" />
-          <small v-if="validation.error && getError('email') !== undefined">{{
-            getError("email").message
-          }}</small>
-        </div>
-        <div class="input-cont">
-          <label>Mot de passe</label>
-          <input type="password" v-model="formLog.password" />
-          <small
-            v-if="validation.error && getError('password') !== undefined"
-            >{{ getError("password").message }}</small
-          >
-        </div>
-      </form>
-
-      <form class="form form-create" v-else action="">
-        <div class="input-cont">
-          <label for="firstname">Prénom</label>
-          <input
-            placeholder="prénom"
-            id="firstname"
-            type="text"
-            v-model="formCreate.firstname"
-          />
-          <small
-            v-if="validation.error && getError('firstname') !== undefined"
-            >{{ getError("firstname").message }}</small
-          >
-        </div>
-
-        <div class="input-cont">
-          <label for="lastname">Nom</label>
-          <input
-            placeholder="Nom"
-            id="lastname"
-            type="text"
-            v-model="formCreate.lastname"
-          />
-
-          <small
-            v-if="validation.error && getError('lastname') !== undefined"
-            >{{ getError("lastname").message }}</small
-          >
-        </div>
-        <div class="input-cont">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            placeholder="Email"
-            type="email"
-            v-model="formCreate.email"
-          />
-          <small v-if="validation.error && getError('email') !== undefined">{{
-            getError("email").message
-          }}</small>
-        </div>
-        <div class="input-cont">
-          <label for="password">Mot de passe</label>
-          <input
-            id="password"
-            placeholder="Password"
-            type="password"
-            v-model="formCreate.password"
-          />
-          <small
-            v-if="validation.error && getError('password') !== undefined"
-            >{{ getError("password").message }}</small
-          >
-        </div>
-        <div class="input-cont">
-          <label for="repeatPassword">Répéter le mot de passe</label>
-          <input
-            id="repeatPassword"
-            placeholder="Repeter le mot de passe"
-            type="password"
-            v-model="formCreate.repeatPassword"
-          />
-          <small
-            v-if="validation.error && getError('repeatPassword') !== undefined"
-            >{{ getError("repeatPassword").message }}</small
-          >
-        </div>
-      </form>
-
-      <div>
-        <p>
-          <span @click="login = true">Login</span> |
-          <span @click="login = false">Create</span>
-        </p>
-      </div>
-      <div>
-        <button @click="send"></button>
-        <button @click="logout">ouai</button>
-      </div>
-      <p>{{ user.username }}</p>
+    <div v-if="user.login === true" class="account-page">
+      <p>{{user.username}}</p>
     </div>
   </Wrapper>
 </template>
@@ -129,6 +32,7 @@ const formCreate = ref({
   email: "",
   password: "",
   repeatPassword: "",
+  address:""
 });
 
 onMounted(async () => {
@@ -191,6 +95,13 @@ const validate = () => {
         message: "Veuillez saisir un email",
       });
     }
+       if(formCreate.value.address.length < 1) {
+      validation.value.error = true;
+      validation.value.errorMessages.push({
+        index: "address",
+        message: "Les mots de passe ne correspondent pas",
+      });
+    }
   }
 };
 
@@ -209,9 +120,7 @@ const send = async () => {
   }
 };
 
-const logout = () => {
-  store.logout();
-};
+
 </script>
 
 <style lang="css" scoped>
