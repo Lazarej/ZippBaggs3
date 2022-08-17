@@ -3,7 +3,7 @@
    <div class="auth-cont">
      <div  class="auth-page">
         <div>
-        <h2 v-if="login === true" class="title-auth">Connéxion</h2>
+        <h2 v-if="login === true" class="title-auth">Connéction</h2>
         <h2 v-else class="title-auth">S'incrire</h2>
         </div>
       <form class="form form-login" v-if="login" action="">
@@ -137,6 +137,7 @@ import Wrapper from "../../components/global/wrapper.vue"
 
 
 
+const router = useRouter();
 const store = userStore();
 const { user } = storeToRefs(store);
 const login = ref(true);
@@ -164,7 +165,8 @@ const formCreate = ref({
 onMounted(async () => {
   await store.loadUserInstance();
   test.value = await user;
-  console.log(user);
+  
+  console.log()
 });
 
 const getError = (index) => {
@@ -237,11 +239,13 @@ const send = async () => {
     if (validation.value.error === false) {
    
       store.login(formLog.value.email, formLog.value.password);
+      router.push({ path: '/user' })
     }
   } else {
     if (validation.value.error === false) {
    
       store.create(formCreate.value)
+      router.push({ path: '/user' })
     }
   }
 };
@@ -295,7 +299,7 @@ font-size: 50px;
 }
 
 .input-cont label{
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 10px;
   font-family: 'Roboto';
   text-transform: uppercase;

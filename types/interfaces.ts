@@ -23,6 +23,6 @@ export interface User {
   token: string,
   id:number ,
   login:boolean,
-  cart: Array<DisplayCart>
+  cart: Cart,
   address: String
 }

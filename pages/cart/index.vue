@@ -81,8 +81,7 @@ const productData = grabData.value.data;
 onMounted(async () => {
   store.loadCartInstance();
   store.displayCartLoad(productData);
-  console.log(store.cart)
-  console.log(displayCart)
+  storeU.loadUserInstance()
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });
@@ -92,9 +91,16 @@ const changeCount = (item) => {
   store.addToCart({ id: item.id, qty: item.qty }, path);
 };
 
-const test = () => {
-  store.$reset()
-  console.log(store.cart)
+const buy = async () => {
+      const data = await fetch("http://localhost:1337/api/users/me", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        method: "POST",
+      });
+
+  
 }
 
 const removeItem = (id: number, productData) => {

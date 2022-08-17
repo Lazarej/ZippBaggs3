@@ -12,15 +12,11 @@ export const useCartStore = defineStore("cart", {
   state: () => ({ cart: {}, displayCart: {} } as State),
   getters: {},
   actions: {
-    test() {
-      this.cart = {};
-    },
-
     loadCartInstance() {
       const cs = localStorage.getItem("cart");
       if (!cs) this.cart = {};
       else this.cart = JSON.parse(cs);
-      console.log(cs);
+      
     },
     addToCart(product: Product, path) {
       const cs = localStorage.getItem("cart");
@@ -84,9 +80,8 @@ export const useCartStore = defineStore("cart", {
             reste: requiredProduct[0].attributes.quantity - ci.qty,
             total: requiredProduct[0].attributes.price * ci.qty,
           };
-          
         });
-        (this.cart as Cart).products = []
+        (this.cart as Cart).products = [];
         localStorage.setItem("cart", JSON.stringify(this.cart));
       } else {
         this.displayCart = (this.cart as Cart).products.map((ci) => {

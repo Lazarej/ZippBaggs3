@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { User, DisplayCart } from "../types/interfaces";
+import { User, Cart } from "../types/interfaces";
 import { useCartStore } from "../store/cart";
 
 interface State {
@@ -43,6 +43,7 @@ export const userStore = defineStore("user", {
         })
           .then((response) => response.json())
           .then((responseJSON) => {
+
             console.log(responseJSON);
             (this.user as User) = {
               token: responseJSON.jwt,
@@ -51,7 +52,7 @@ export const userStore = defineStore("user", {
               email: responseJSON.user.email,
               login: true,
               address: responseJSON.user.address,
-              cart: [],
+              cart: new Cart(),
             };
           });
         cartStore.loadCartInstance();
@@ -60,7 +61,7 @@ export const userStore = defineStore("user", {
        if((this.user as User).cart.length === 0){
         (this.user as User).cart.push.apply(
           (this.user as User).cart,
-          cartStore.cart.products
+          cartStore.cart
         );
        }
           

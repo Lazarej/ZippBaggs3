@@ -1,7 +1,47 @@
 <template>
   <Wrapper>
-    <div v-if="user.login === true" class="account-page">
-      <p>{{user.username}}</p>
+    <div class="head">
+      <h2>Mon compte</h2>
+      <p>{{ user.username }}</p>
+    </div>
+    <div class="option-cont">
+      <nuxt-link tag="a" to="/user/commande">
+        <div class="option">
+          <div class="svg-cont">
+            <div class="svg"></div>
+          </div>
+          <div class="text-cont">
+            <p class="text-cont-title">Suivit de commande</p>
+            <p class="text-cont-text">
+              Voir l’historique de vos commandes et suivre celles en cours
+            </p>
+          </div>
+        </div>
+      </nuxt-link>
+      <nuxt-link tag="a" to="">
+        <div class="option">
+          <div class="svg-cont">
+            <div class="svg"></div>
+          </div>
+          <div class="text-cont">
+            <p class="text-cont-title">Information personelle</p>
+            <p class="text-cont-text">
+              Mettez a jour vos informations personelles
+            </p>
+          </div>
+        </div>
+      </nuxt-link>
+      <nuxt-link tag="a" to="">
+        <div class="option">
+          <div class="svg-cont">
+            <div class="svg"></div>
+          </div>
+          <div class="text-cont">
+            <p class="text-cont-title">conditions d'utilisation</p>
+            <p class="text-cont-text">Nos conditions d’utilisation</p>
+          </div>
+        </div>
+      </nuxt-link>
     </div>
   </Wrapper>
 </template>
@@ -13,132 +53,93 @@ import { userStore } from "../../store/user";
 
 const store = userStore();
 const { user } = storeToRefs(store);
-const login = ref(false);
-const test = ref({});
-
-const validation = ref({
-  error: false,
-  errorMessages: [],
-});
-
-const formLog = ref({
-  email: "",
-  password: "",
-});
-
-const formCreate = ref({
-  firstname: "",
-  lastname: "",
-  email: "",
-  password: "",
-  repeatPassword: "",
-  address:""
-});
 
 onMounted(async () => {
   await store.loadUserInstance();
-  test.value = await user;
   console.log(user);
 });
-
-const getError = (index) => {
-  return validation.value.errorMessages.find((e) => {
-    return e.index === index;
-  });
-};
-
-const validate = () => {
-  if (login.value == true) {
-    if (formLog.value.email.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "email",
-        message: "Veuillez saisir un email",
-      });
-    }
-    if (formLog.value.password.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "password",
-        message: "Veuillez saisir un mot de passe",
-      });
-    }
-  } else {
-    if (formCreate.value.firstname.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "firstname",
-        message: "Veuillez saisir un nom",
-      });
-    }
-    if (
-      (formCreate.value.password === formCreate.value.repeatPassword &&
-        formCreate.value.password.length > 5) === false
-    ) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "passwordRepeat",
-        message: "Les mots de passe ne correspondent pas",
-      });
-    }
-    if (formCreate.value.lastname.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "lastname",
-        message: "Veuillez saisir un prénom",
-      });
-    }
-    if (formCreate.value.email.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "email",
-        message: "Veuillez saisir un email",
-      });
-    }
-       if(formCreate.value.address.length < 1) {
-      validation.value.error = true;
-      validation.value.errorMessages.push({
-        index: "address",
-        message: "Les mots de passe ne correspondent pas",
-      });
-    }
-  }
-};
-
-const send = async () => {
-  validate();
-  if (login.value == true) {
-    if (validation.value.error === false) {
-   
-      store.login(formLog.value.email, formLog.value.password);
-    }
-  } else {
-    if (validation.value.error === false) {
-   
-      store.create(formCreate.value)
-    }
-  }
-};
-
-
 </script>
 
 <style lang="css" scoped>
-.auth-page {
-  height: 100%;
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 15%;
+  align-items: flex-end;
+  border-bottom: solid 1px var(--secondary);
+  padding-bottom: 40px;
+}
+
+.head p {
+  font-family: "Monument";
+  text-transform: uppercase;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.option-cont {
+  height: 80%;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.option {
+  height: 310px;
+  width: 330px;
+  padding: 20px;
+}
+
+.svg-cont {
+  height: 65%;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
-.form {
-  display: flex;
-  flex-direction: column;
+
+a{
+  color: var(--title);
 }
 
-.input-cont {
-  display: flex;
-  flex-direction: column;
+ a:nth-child(1)  .option .svg-cont .svg {
+  background: url("../../../assets/svg/package.svg") center center / 80px 80px
+    no-repeat;
+  height: 90px;
+  width: 90px;
+}
+ a:nth-child(2)  .option .svg-cont .svg {
+  background: url("../../../assets/svg/finger.svg") center center / 80px 80px
+    no-repeat;
+  height: 90px;
+  width: 90px;
+}
+ a:nth-child(3)  .option .svg-cont .svg {
+  background: url("../../../assets/svg/contract.svg") center center / 80px 80px
+    no-repeat;
+  height: 90px;
+  width: 90px;
+}
+
+.text-cont {
+  text-align: center;
+}
+.text-cont-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+  line-height: 90%;
+  font-family: "Nimbus";
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  font-weight: bold;
+}
+
+.text-cont-text {
+  font-family: "Montserrat";
+  font-size: 14px;
+  letter-spacing: -1px;
+  line-height: 17px;
+  color: var(--text);
 }
 </style>

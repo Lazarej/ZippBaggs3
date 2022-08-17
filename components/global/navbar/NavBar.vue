@@ -82,6 +82,7 @@
 import { userStore } from "../../../store/user";
 import { storeToRefs } from "pinia";
 
+const router = useRouter();
 const store = userStore();
 const { user } = storeToRefs(store);
 const navActive = ref(false);
@@ -109,6 +110,7 @@ function toggle() {
 
 const logout = () => {
   store.logout();
+  router.push({ path: '/' })
 };
 
 const  hiddenCategorieImg = () => {

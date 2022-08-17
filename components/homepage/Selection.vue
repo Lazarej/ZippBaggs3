@@ -24,7 +24,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
+
 .selection{
     height: 100vh;
     width: 100%;
