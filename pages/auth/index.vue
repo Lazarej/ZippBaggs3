@@ -162,12 +162,7 @@ const formCreate = ref({
   address:""
 });
 
-onMounted(async () => {
-  await store.loadUserInstance();
-  test.value = await user;
-  
-  console.log()
-});
+
 
 const getError = (index) => {
   return validation.value.errorMessages.find((e) => {
@@ -238,13 +233,13 @@ const send = async () => {
   if (login.value == true) {
     if (validation.value.error === false) {
    
-      store.login(formLog.value.email, formLog.value.password);
+      await store.login(formLog.value.email, formLog.value.password);
       router.push({ path: '/user' })
     }
   } else {
     if (validation.value.error === false) {
    
-      store.create(formCreate.value)
+      await store.create(formCreate.value)
       router.push({ path: '/user' })
     }
   }

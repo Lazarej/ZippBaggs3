@@ -56,7 +56,7 @@ const { user } = storeToRefs(store);
 
 onMounted(async () => {
   await store.loadUserInstance();
-  console.log(user);
+
 });
 </script>
 

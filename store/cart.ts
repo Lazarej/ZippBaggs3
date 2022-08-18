@@ -44,7 +44,7 @@ export const useCartStore = defineStore("cart", {
 
         if (!isAdded)
           cartLocalStorage.products.push({ id: product.id, qty: product.qty });
-
+        
         this.cart = cartLocalStorage;
       }
       localStorage.setItem("cart", JSON.stringify(this.cart));

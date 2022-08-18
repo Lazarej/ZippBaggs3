@@ -82,6 +82,8 @@ onMounted(async () => {
   store.loadCartInstance();
   store.displayCartLoad(productData);
   storeU.loadUserInstance()
+  console.log(storeU.user.cart)
+  console.log(store.cart)
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });

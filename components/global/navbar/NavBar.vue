@@ -98,8 +98,6 @@ onMounted(async () => {
     "http://localhost:1337/api/categories?populate=*"
   );
   categories.value = response._rawValue.data;
-
-  console.log(user);
 });
 
 function toggle() {
