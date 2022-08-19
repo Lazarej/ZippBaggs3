@@ -26,8 +26,9 @@ export const useCartStore = defineStore("cart", {
     },
 
     reset(){
-      this.cart.products = [];
+      this.cart = {};
       localStorage.setItem("cart", JSON.stringify(this.cart)); 
+      console.log(localStorage.getItem("cart"))
       
     },
 

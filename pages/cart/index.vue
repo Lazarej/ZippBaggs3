@@ -48,7 +48,7 @@
         <p>
           total: <span> {{ total2 }} EUR</span>
         </p>
-        <button >Achetez</button>
+        <button @click="reset">Achetez</button>
       </div>
     </div>
   </Wrapper>
@@ -90,6 +90,11 @@ onMounted(async () => {
 const changeCount = (item) => {
   store.addToCart({ id: item.id, qty: item.qty }, path);
 };
+
+const reset = ()=>{
+  store.reset()
+  storeU.reset()
+}
 
 const buy = async () => {
       const data = await fetch("http://localhost:1337/api/users/me", {

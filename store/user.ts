@@ -26,11 +26,18 @@ export const userStore = defineStore("user", {
       if (data.status === 401) this.user = {};
     },
 
+    reset(){
+      this.user = {};
+      localStorage.setItem("user", JSON.stringify(this.user)); 
+      console.log(localStorage.getItem("user"))
+      
+    },
+
     async login(email, password,) {
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
       console.log(us)
-      const concat = cartStore.cart.products.concat(us.cart.products)
+      let concat = cartStore.cart.products.concat(us.cart.products)
       
       try {
         await fetch("http://localhost:1337/api/auth/local", {
