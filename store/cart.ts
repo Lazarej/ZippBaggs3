@@ -13,20 +13,40 @@ export const useCartStore = defineStore("cart", {
   getters: {},
   actions: {
     loadCartInstance() {
+     
+      
       const cs = localStorage.getItem("cart");
       if (!cs) this.cart = {};
-      else this.cart = JSON.parse(cs);
       
+      else this.cart = JSON.parse(cs);
+      console.log('load', this.cart)
+
+     
+      
+    },
+
+    reset(){
+      this.cart.products = [];
+      localStorage.setItem("cart", JSON.stringify(this.cart)); 
+      
+    },
+
+    mutation(){
+      const storeU = userStore();
+      this.cart = storeU.user.cart;
+      localStorage.setItem("cart", JSON.stringify(this.cart));
     },
     addToCart(product: Product, path) {
       const cs = localStorage.getItem("cart");
       let isAdded = false;
       if (!cs)
+      console.log('no storage' , cs),
         this.cart = {
           cid: uuid4(),
           products: [product],
         };
       else {
+        console.log('storage' , cs);
         let cartLocalStorage = JSON.parse(cs);
         cartLocalStorage.products = cartLocalStorage.products.map(
           (ci: Product) => {
@@ -48,6 +68,8 @@ export const useCartStore = defineStore("cart", {
         this.cart = cartLocalStorage;
       }
       localStorage.setItem("cart", JSON.stringify(this.cart));
+      console.log(this.cart)
+      console.log(localStorage.getItem("cart"))
     },
     removeFromCart(id: number, productData) {
       (this.cart as Cart).products = (this.cart as Cart).products.filter(
@@ -60,30 +82,8 @@ export const useCartStore = defineStore("cart", {
     displayCartLoad(productData) {
       const storeU = userStore();
       storeU.loadUserInstance();
-
-      if (storeU.user.login == true) {
-        console.log("log");
-        this.displayCart = storeU.user.cart.map((ci) => {
-          const requiredProduct = productData.filter(
-            (p: { id: number }) => p.id == ci.id
-          );
-          /*if (requiredProduct[0].attributes.quantity >= ci.qty)*/
-          return {
-            id: ci.id,
-            name: requiredProduct[0].attributes.name,
-            price: requiredProduct[0].attributes.price,
-            qty: ci.qty,
-            currency: requiredProduct[0].attributes.currency,
-            image: requiredProduct[0].attributes.images.data[0].attributes.url,
-            inStock:
-              requiredProduct[0].attributes.quantity >= ci.qty ? true : false,
-            reste: requiredProduct[0].attributes.quantity - ci.qty,
-            total: requiredProduct[0].attributes.price * ci.qty,
-          };
-        });
-        (this.cart as Cart).products = [];
-        localStorage.setItem("cart", JSON.stringify(this.cart));
-      } else {
+      console.log(this.cart.products)
+     
         this.displayCart = (this.cart as Cart).products.map((ci) => {
           const requiredProduct = productData.filter(
             (p: { id: number }) => p.id == ci.id
@@ -104,5 +104,5 @@ export const useCartStore = defineStore("cart", {
         });
       }
     },
-  },
+  
 });

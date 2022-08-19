@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { User, Cart } from "../types/interfaces";
+import { User, Cart,Product } from "../types/interfaces";
 import { useCartStore } from "../store/cart";
 
 interface State {
@@ -15,7 +15,7 @@ export const userStore = defineStore("user", {
     async loadUserInstance() {
       const us = localStorage.getItem("user");
       if (!us) this.user = {};
-       this.user = JSON.parse(us);
+      this.user = JSON.parse(us);
       const data = await fetch("http://localhost:1337/api/users/me", {
         headers: {
           "Content-Type": "application/json",
@@ -26,10 +26,12 @@ export const userStore = defineStore("user", {
       if (data.status === 401) this.user = {};
     },
 
-    async login(email, password) {
+    async login(email, password,) {
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
       console.log(us)
+      const concat = cartStore.cart.products.concat(us.cart.products)
+      
       try {
         await fetch("http://localhost:1337/api/auth/local", {
           headers: {
@@ -43,7 +45,7 @@ export const userStore = defineStore("user", {
         })
           .then((response) => response.json())
           .then((responseJSON) => {
-
+            console.log(responseJSON),
             (this.user as User) = {
               token: responseJSON.jwt,
               username: responseJSON.user.username,
@@ -51,21 +53,20 @@ export const userStore = defineStore("user", {
               email: responseJSON.user.email,
               login: true,
               address: responseJSON.user.address,
-              cart: {cId: cartStore.cart.cid , products: cartStore.cart.products + us.cart.product} ,
+              cart: {
+                cId: cartStore.cart.cid,
+                products: concat,
+              },
             };
           });
-        
-          cartStore.displayCartLoad
-          
-      
-    
-      
+        cartStore.mutation()
+        cartStore.displayCartLoad;
         
         localStorage.setItem("user", JSON.stringify(this.user));
+        console.log(cartStore.cart.cId)
         console.log(this.user)
-      } catch (error) {
-        console.error(error +'ouai');
-      }
+        console.log(us)
+      } catch (error) {}
     },
 
     async create(formCreate) {
@@ -74,7 +75,7 @@ export const userStore = defineStore("user", {
         username: formCreate.firstname + " " + formCreate.lastname,
         email: formCreate.email,
         password: formCreate.password,
-        address:formCreate.address 
+        address: formCreate.address,
       };
       console.log(body);
       try {
@@ -90,7 +91,6 @@ export const userStore = defineStore("user", {
         )
           .then((response) => response.json())
           .then((responseJSON) => {
-
             (this.user as User) = {
               token: responseJSON.jwt,
               username: responseJSON.user.username,
@@ -107,14 +107,11 @@ export const userStore = defineStore("user", {
         );
 
         localStorage.setItem("user", JSON.stringify(this.user));
-        
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
 
     logout() {
-      let us = JSON.parse(localStorage.getItem("user"));
+      const cartStore = useCartStore(); 
       this.user = {
         token: null,
         username: null,
@@ -122,11 +119,11 @@ export const userStore = defineStore("user", {
         email: null,
         login: false,
         address: null,
-        cart: {cId: us.cart.cId , products: us.cart.products  } ,
-      }
+        cart: { cId: cartStore.cart.cId, products: cartStore.cart.products },
+      };
 
       localStorage.setItem("user", JSON.stringify(this.user));
-      console.log(JSON.parse(localStorage.getItem("user")))
+      cartStore.reset()
     },
   },
 });
