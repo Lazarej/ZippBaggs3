@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { User, Cart,Product } from "../types/interfaces";
 import { useCartStore } from "../store/cart";
+import { v4 as uuid4 } from "uuid";
 
 interface State {
   user: User | {};
@@ -26,18 +27,13 @@ export const userStore = defineStore("user", {
       if (data.status === 401) this.user = {};
     },
 
-    reset(){
-      this.user = {};
-      localStorage.setItem("user", JSON.stringify(this.user)); 
-      console.log(localStorage.getItem("user"))
-      
-    },
+    
 
     async login(email, password,) {
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
-      console.log(us)
-      let concat = cartStore.cart.products.concat(us.cart.products)
+      let ids = new Set(cartStore.cart.products.map(d => d.id));
+      let merge = [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
       
       try {
         await fetch("http://localhost:1337/api/auth/local", {
@@ -61,18 +57,18 @@ export const userStore = defineStore("user", {
               login: true,
               address: responseJSON.user.address,
               cart: {
-                cId: cartStore.cart.cid,
-                products: concat,
+                cId: !us ? cartStore.cart.cid : uuid4(),  
+                products:merge,
               },
             };
           });
-        cartStore.mutation()
-        cartStore.displayCartLoad;
+        
         
         localStorage.setItem("user", JSON.stringify(this.user));
-        console.log(cartStore.cart.cId)
-        console.log(this.user)
-        console.log(us)
+        cartStore.mutation();
+        console.log(JSON.parse(localStorage.getItem("user")))
+        console.log(cartStore.cart)
+
       } catch (error) {}
     },
 
@@ -118,7 +114,8 @@ export const userStore = defineStore("user", {
     },
 
     logout() {
-      const cartStore = useCartStore(); 
+      const cartStore = useCartStore();
+      console.log(cartStore.cart) 
       this.user = {
         token: null,
         username: null,
@@ -126,11 +123,13 @@ export const userStore = defineStore("user", {
         email: null,
         login: false,
         address: null,
-        cart: { cId: cartStore.cart.cId, products: cartStore.cart.products },
-      };
-
+        cart: { cId: cartStore.cart.cid, products: cartStore.cart.products },
+      }
+      
       localStorage.setItem("user", JSON.stringify(this.user));
+      console.log(localStorage.getItem("user"))
       cartStore.reset()
+    
     },
   },
 });
