@@ -60,6 +60,9 @@ import { useCartStore } from "../../store/cart";
 import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
 import { userStore } from "../../store/user";
+import { StripeElements, StripeElement } from 'vue-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+
 const store = useCartStore();
 const storeU = userStore();
 const { cart, displayCart } = storeToRefs(store);
@@ -73,6 +76,14 @@ computed(() => {
   return sum;
 });
 
+onBeforeMount(() => {
+      const stripeLoaded = ref(false)
+      const stripePromise = loadStripe('pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9')
+      stripePromise.then(() => {
+        stripeLoaded.value = true
+      })
+    })
+
 const { data: grabData } = await useFetch(
   "http://localhost:1337/api/produits/?populate=*"
 );
@@ -81,28 +92,29 @@ const productData = grabData.value.data;
 onMounted(async () => {
   store.loadCartInstance();
   store.displayCartLoad(productData);
-  storeU.loadUserInstance()
+  storeU.loadUserInstance();
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });
+});
+
+watch(store, () => {
+  console.log("some changed", store);
 });
 
 const changeCount = (item) => {
   store.addToCart({ id: item.id, qty: item.qty }, path);
 };
 
-
 const buy = async () => {
-      const data = await fetch("http://localhost:1337/api/users/me", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        method: "POST",
-      });
-
-  
-}
+  const data = await fetch("http://localhost:1337/api/users/me", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+    method: "POST",
+  });
+};
 
 const removeItem = (id: number, productData) => {
   console.log(id);

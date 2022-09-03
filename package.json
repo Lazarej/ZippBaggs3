@@ -8,7 +8,8 @@
   },
   "devDependencies": {
     "@types/uuid": "^8.3.4",
-    "nuxt": "3.0.0-rc.6"
+    "nuxt": "3.0.0-rc.6",
+    "vue-stripe-js": "^1.0.1"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.3.1",
