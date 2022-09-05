@@ -43,12 +43,24 @@
         </div>
       </div>
     </div>
+    <div class="pay-cont">
+      <StripeElements
+        v-if="stripeLoaded"
+        v-slot="{ elements, instance }"
+        ref="elms"
+        :stripe-key="stripeKey"
+        :instance-options="instanceOptions"
+        :elements-options="elementsOptions"
+      >
+        <StripeElement ref="card" :elements="elements" :options="cardOptions" />
+      </StripeElements>
+    </div>
     <div class="total-buy">
       <div class="btn-total">
         <p>
           total: <span> {{ total2 }} EUR</span>
         </p>
-        <button @click="store.timer">Achetez</button>
+        <button @click="buy">Achetez</button>
       </div>
     </div>
   </Wrapper>
@@ -60,14 +72,35 @@ import { useCartStore } from "../../store/cart";
 import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
 import { userStore } from "../../store/user";
-import { StripeElements, StripeElement } from 'vue-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
+import { StripeElements, StripeElement } from "vue-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
+const router = useRouter();
 const store = useCartStore();
 const storeU = userStore();
 const { cart, displayCart } = storeToRefs(store);
 const path = useRoute().path;
 const total2 = ref(0);
+const stripeKey = ref(
+  "pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9"
+);
+const instanceOptions = ref({});
+const elementsOptions = ref({});
+const cardOptions = ref({
+  value: {
+    postalCode: "12345",
+  },
+});
+const stripeLoaded = ref(false);
+const card = ref();
+const elms = ref();
+
+onBeforeMount(() => {
+  const stripePromise = loadStripe(stripeKey.value);
+  stripePromise.then(() => {
+    stripeLoaded.value = true;
+  });
+});
 
 computed(() => {
   let sum = displayCart.value.forEach((item) => {
@@ -75,14 +108,6 @@ computed(() => {
   });
   return sum;
 });
-
-onBeforeMount(() => {
-      const stripeLoaded = ref(false)
-      const stripePromise = loadStripe('pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9')
-      stripePromise.then(() => {
-        stripeLoaded.value = true
-      })
-    })
 
 const { data: grabData } = await useFetch(
   "http://localhost:1337/api/produits/?populate=*"
@@ -96,10 +121,15 @@ onMounted(async () => {
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });
-});
-
-watch(store, () => {
-  console.log("some changed", store);
+  const data = await fetch("http://localhost:1337/api/commandes?populate=*", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${storeU.user.token}`,
+        },
+        method: "GET",
+      });
+    console.log(data.json())
+      
 });
 
 const changeCount = (item) => {
@@ -107,13 +137,39 @@ const changeCount = (item) => {
 };
 
 const buy = async () => {
-  const data = await fetch("http://localhost:1337/api/users/me", {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${user.token}`,
-    },
-    method: "POST",
-  });
+  const productId = displayCart.value.map((p)=>{
+        return p.id
+      })
+  if (storeU.user.login === true && displayCart.value.length !== 0) {
+ 
+    const body = {
+       uid: storeU.user.cart.cId,
+       status:'Commande',
+       total: total2.value,
+       produits: productId,
+       user: storeU.user.id  
+    };
+    try {
+      const data = await fetch(
+        "http://localhost:1337/api/commandes",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${storeU.user.token}`,
+          },
+          method: "POST",
+          body: JSON.stringify({data:body}),
+        }
+      ).then((response) => response.json())
+      .then((responseJSON) => {
+        console.log(responseJSON)
+      })
+    } catch (error) {
+       console.log(error)
+    }
+  } else {
+    router.push({ path: "/auth" });
+  }
 };
 
 const removeItem = (id: number, productData) => {
@@ -124,6 +180,16 @@ const removeItem = (id: number, productData) => {
 </script>
 
 <style lang="css" scoped>
+.pay-cont {
+  height: 0%;
+  width: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+}
 .header-cart-page {
   display: flex;
   align-items: center;

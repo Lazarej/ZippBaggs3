@@ -13,11 +13,7 @@ interface State {
 export const useCartStore = defineStore("cart", {
   state: () => ({ cart: {}, displayCart: {}, timer: null } as State),
   getters: {
-    regarde(){
-      if(this.cart.products = []){
-        console.log('regarde')
-      }
-    }
+
   },
   actions: {
     loadCartInstance() {
@@ -37,14 +33,6 @@ export const useCartStore = defineStore("cart", {
       console.log(localStorage.getItem("cart"));
     },
 
-    watchMeGo() {
-      watch((this.cart as Cart).products,
-          (newVal,oldVal) => {
-              console.log('hello from watchMeGo',newVal,oldVal)
-          },
-          { deep: true }
-      )
-  },
 
     timer(productData) {
       let date = new Date().getTime();

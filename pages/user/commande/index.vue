@@ -5,7 +5,9 @@
           <h2 class="head-title">Commande</h2>
         </div>
         <div class="commande-cont">
-           
+           <div class="no-commande">
+               
+           </div>
         </div>
     </div>
   </Wrapper>
@@ -13,8 +15,25 @@
 
 <script setup>
 import Wrapper from "../../../components/global/wrapper.vue";
+import { storeToRefs } from "pinia";
+import { userStore } from "../../../store/user";
 
 
+const store = userStore();
+const { user } = storeToRefs(store);
+
+
+onBeforeMount(()=>{
+  if(store.user.login === false || store.user.login === undefined){
+    return navigateTo({ path: '/auth' })
+  }
+})
+
+onMounted(async () => {
+  await store.loadUserInstance();
+   
+
+});
 
 
 </script>

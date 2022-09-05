@@ -54,6 +54,14 @@ import { userStore } from "../../store/user";
 const store = userStore();
 const { user } = storeToRefs(store);
 
+
+onBeforeMount(()=>{
+  if(store.user.login === false || store.user.login === undefined){
+    return navigateTo({ path: '/auth' })
+  }
+})
+
+
 onMounted(async () => {
   await store.loadUserInstance(); 
 

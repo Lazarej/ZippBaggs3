@@ -15,15 +15,18 @@ export const userStore = defineStore("user", {
   actions: {
     async loadUserInstance() {
       const us = localStorage.getItem("user");
+
       if (!us) this.user = {};
       this.user = JSON.parse(us);
-      const data = await fetch("http://localhost:1337/api/users/me", {
+      const data = await fetch("http://localhost:1337/api/users/me?populate=* ", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.user.token}`,
         },
         method: "GET",
       });
+      console.log(data.json())
+      console.log(JSON.parse(localStorage.getItem("user")).cart)
       if (data.status === 401) this.user = {};
     },
 
@@ -32,8 +35,9 @@ export const userStore = defineStore("user", {
     async login(email, password,) {
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
+      console.log(us.cart.product)
       let ids = new Set(cartStore.cart.products.map(d => d.id));
-      let merge = [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
+      let merge = us.cart.product === undefined ? cartStore.cart.products :  [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
       
       try {
         await fetch("http://localhost:1337/api/auth/local", {
@@ -58,7 +62,7 @@ export const userStore = defineStore("user", {
               address: responseJSON.user.address,
               cart: {
                 cId: !us ? cartStore.cart.cid : uuid4(),  
-                products:merge,
+                products: merge,
               },
             };
           });
@@ -69,7 +73,7 @@ export const userStore = defineStore("user", {
         console.log(JSON.parse(localStorage.getItem("user")))
         console.log(cartStore.cart)
 
-      } catch (error) {}
+      } catch (error) {} 
     },
 
     async create(formCreate) {
@@ -80,7 +84,6 @@ export const userStore = defineStore("user", {
         password: formCreate.password,
         address: formCreate.address,
       };
-      console.log(body);
       try {
         const data = await fetch(
           "http://localhost:1337/api/auth/local/register",
