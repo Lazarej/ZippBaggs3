@@ -120,16 +120,7 @@ onMounted(async () => {
   storeU.loadUserInstance();
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
-  });
-  const data = await fetch("http://localhost:1337/api/commandes?populate=*", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${storeU.user.token}`,
-        },
-        method: "GET",
-      });
-    console.log(data.json())
-      
+  });    
 });
 
 const changeCount = (item) => {
@@ -141,10 +132,11 @@ const buy = async () => {
         return p.id
       })
   if (storeU.user.login === true && displayCart.value.length !== 0) {
- 
+    console.log(store.cart.cid)
     const body = {
-       uid: storeU.user.cart.cId,
-       status:'Commande',
+       uid: store.cart.cid,
+       status:'En Préparation',
+       
        total: total2.value,
        produits: productId,
        user: storeU.user.id  
@@ -160,10 +152,9 @@ const buy = async () => {
           method: "POST",
           body: JSON.stringify({data:body}),
         }
-      ).then((response) => response.json())
-      .then((responseJSON) => {
-        console.log(responseJSON)
-      })
+      )
+      store.reset();
+      store.displayCartLoad(productData)
     } catch (error) {
        console.log(error)
     }

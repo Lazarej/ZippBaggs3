@@ -15,9 +15,9 @@ export const userStore = defineStore("user", {
   actions: {
     async loadUserInstance() {
       const us = localStorage.getItem("user");
-
+      
       if (!us) this.user = {};
-      this.user = JSON.parse(us);
+     else this.user = JSON.parse(us);
       const data = await fetch("http://localhost:1337/api/users/me?populate=* ", {
         headers: {
           "Content-Type": "application/json",
@@ -25,9 +25,9 @@ export const userStore = defineStore("user", {
         },
         method: "GET",
       });
-      console.log(data.json())
-      console.log(JSON.parse(localStorage.getItem("user")).cart)
+     
       if (data.status === 401) this.user = {};
+      console.log(this.user)
     },
 
     
@@ -35,9 +35,9 @@ export const userStore = defineStore("user", {
     async login(email, password,) {
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
-      console.log(us.cart.product)
+      console.log(!cartStore)
       let ids = new Set(cartStore.cart.products.map(d => d.id));
-      let merge = us.cart.product === undefined ? cartStore.cart.products :  [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
+      let merge = us.cart.products === undefined || !us ? cartStore.cart.products :  [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
       
       try {
         await fetch("http://localhost:1337/api/auth/local", {
@@ -52,7 +52,6 @@ export const userStore = defineStore("user", {
         })
           .then((response) => response.json())
           .then((responseJSON) => {
-            console.log(responseJSON),
             (this.user as User) = {
               token: responseJSON.jwt,
               username: responseJSON.user.username,
@@ -61,7 +60,7 @@ export const userStore = defineStore("user", {
               login: true,
               address: responseJSON.user.address,
               cart: {
-                cId: !us ? cartStore.cart.cid : uuid4(),  
+                cId:  cartStore.cart.cid,  
                 products: merge,
               },
             };
@@ -70,8 +69,7 @@ export const userStore = defineStore("user", {
         
         localStorage.setItem("user", JSON.stringify(this.user));
         cartStore.mutation();
-        console.log(JSON.parse(localStorage.getItem("user")))
-        console.log(cartStore.cart)
+
 
       } catch (error) {} 
     },
@@ -113,7 +111,9 @@ export const userStore = defineStore("user", {
         );
 
         localStorage.setItem("user", JSON.stringify(this.user));
-      } catch (error) {}
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     logout() {
