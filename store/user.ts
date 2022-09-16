@@ -82,7 +82,6 @@ export const userStore = defineStore("user", {
         password: formCreate.password,
         adresse: formCreate.adresse,
       };
-      console.log(body)
       try {
         const data = await fetch(
           "http://localhost:1337/api/auth/local/register",
@@ -119,6 +118,35 @@ export const userStore = defineStore("user", {
       } catch (error) {
         console.log(error)
       }
+    },
+
+    async change(formChange){
+      const body = {        
+        email: formChange.email,
+        password: formChange.newPassword,
+        adresse: formChange.adresse,
+      };
+      try{
+        const data = await fetch(
+          `http://localhost:1337/api/users/${this.user.id}` ,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.user.token}`,
+            },
+            method: "PUT",
+            body: JSON.stringify(body),
+          }
+        )
+        console.log(data.json())
+        
+        
+        localStorage.setItem("user", JSON.stringify(this.user));
+
+      }catch(error){
+         console.log(error)
+      }
+
     },
 
     logout() {

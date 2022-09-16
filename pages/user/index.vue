@@ -1,9 +1,6 @@
 <template>
   <Wrapper>
-    <div class="head">
-      <h2>Mon compte</h2>
-      <p>{{ user.username }}</p>
-    </div>
+    <Header :title="'Mon compte'" :info="user.username"></Header>
     <div class="option-cont">
       <nuxt-link tag="a" to="/user/commande">
         <div class="option">
@@ -18,7 +15,7 @@
           </div>
         </div>
       </nuxt-link>
-      <nuxt-link tag="a" to="">
+      <nuxt-link tag="a" to="/user/changeUser">
         <div class="option">
           <div class="svg-cont">
             <div class="svg"></div>
@@ -48,6 +45,7 @@
 
 <script setup lang="ts">
 import Wrapper from "../../components/global/wrapper.vue";
+import Header from "../../components/global/header.vue";
 import { storeToRefs } from "pinia";
 import { userStore } from "../../store/user";
 
@@ -56,35 +54,15 @@ const { user } = storeToRefs(store);
 
 
 onBeforeMount(()=>{
+  store.loadUserInstance(); 
   if(store.user.login === false || store.user.login === undefined){
     return navigateTo({ path: '/auth' })
   }
 })
 
-
-onMounted(async () => {
-  await store.loadUserInstance(); 
-
-});
 </script>
 
 <style lang="css" scoped>
-.head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 15%;
-  align-items: flex-end;
-  border-bottom: solid 1px var(--secondary);
-  padding-bottom: 40px;
-}
-
-.head p {
-  font-family: "Monument";
-  text-transform: uppercase;
-  font-size: 16px;
-  color: var(--text);
-}
 
 .option-cont {
   height: 80%;
