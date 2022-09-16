@@ -24,5 +24,5 @@ export interface User {
   id:number ,
   login:boolean,
   cart: Cart,
-  address: String
+  adresse: String
 }

@@ -2,7 +2,7 @@
   <Wrapper>
     <div class="commande-page">
       <div class="head">
-        <h2 class="head-title">Commande</h2>
+        <h2 class="head-title">Mes Commandes</h2>
       </div>
       <div class="commande-cont">
         <div v-if="commandes.length === 0" class="no-commande">
@@ -12,18 +12,32 @@
           <div class="row-commande" v-for="(commande, i) in commandes" :key="i">
             <div class="commande">
               <div class="info-cont">
-                <div
-                  class="img"
-                  :style="{
-                    background: `url('http://localhost:1337${commande.produits[0].images[0].url}') center /cover no-repeat`,
-                  }"
-                ></div>
-                <div class="info">
-                  <h4>{{commande.produits[0].name}}</h4>
-                  <p class="price">{{commande.total}} €</p>
-                  <p class="adresse">{{store.user.adresse}}</p>
-                  <p class="date">{{commande.createdAt}}</p>
-                  <p class="status">{{commande.status}}</p>
+                <div class="part-left-row">
+                  <div
+                    class="img"
+                    :style="{
+                      background: `url('http://localhost:1337${commande.produits[0].images[0].url}') center /cover no-repeat`,
+                    }"
+                  ></div>
+                  <div class="info">
+                    <div>
+                      <h4>{{ commande.produits[0].name }}</h4>
+                      <p class="price">{{ commande.total }} €</p>
+                      <p class="adresse">{{ store.user.adresse }}</p>
+                      <p class="date">{{ commande.createdAt }}</p>
+                    </div>
+                    <p class="status">{{ commande.status }}</p>
+                  </div>
+                </div>
+                <div class="part-right-row">
+                  <p class="commande-lenght">({{commande.produits.length}})</p>
+                  <nuxt-link  :to="`/user/commande/detailsCommande/${commande.id}`">
+                    <div class="details">
+                      <p>détails</p>
+                      <div class="svg"></div>
+                    </div>
+                  </nuxt-link>
+
                 </div>
               </div>
               <div></div>
@@ -44,7 +58,7 @@ const store = userStore();
 const { user } = storeToRefs(store);
 const commandes = ref([]);
 
-onBeforeMount(async () => {
+onBeforeMount(() => {
   store.loadUserInstance();
   if (store.user.login === false || store.user.login === undefined) {
     return navigateTo({ path: "/auth" });
@@ -67,8 +81,7 @@ onMounted(async () => {
   const response = await data.json();
   console.log(store.user);
   commandes.value = response.commandes;
-
-  console.log(commandes.value[0].produits[0].images[0].url, "commandes");
+  console.log(commandes.value)
 });
 </script>
 
@@ -123,50 +136,101 @@ onMounted(async () => {
 
 .commande {
   height: 100%;
-}
-
-.info-cont {
-  height: 100%;
-  margin-left: 30px;
   display: flex;
   
 }
 
-.info{
+.part-left-row {
+  display: flex;
+}
+
+.info-cont {
+  height: 100%;
+  width: 100%;
+  margin-left: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info {
+  display: flex;
   flex-direction: column;
+  justify-content: space-between;
   margin-left: 30px;
 }
 
-.info h4{
+.info h4 {
   margin-top: 0;
-    margin-bottom: 40px;
-    line-height: 90%;
-    font-family: "Nimbus";
-    text-transform: uppercase;
-    font-size: 20px;
-    text-transform: uppercase;
-    letter-spacing: -0.035em;
-    color: var(--title);
+  margin-bottom: 20px;
+  line-height: 90%;
+  font-family: "Nimbus";
+  text-transform: uppercase;
+  font-size: 25px;
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  color: var(--title);
 }
 
-.price p{
+.price p {
   font-size: 14px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
 }
 
-.price{
+.price {
   margin-bottom: 15px;
 }
-.info p{
-   
-    letter-spacing: -1px;
-    line-height: 17px;
-    color: var(--text);
+.info p {
+  font-family: "RobotoC";
+  letter-spacing: -1px;
+  line-height: 17px;
+  color: var(--text);
 }
 
+.status {
+  text-transform: uppercase;
+  color: var(--title) !important;
+  text-align: bottom;
+  font-size: 18px;
+}
 
 .img {
   height: 100%;
   width: calc(100px + 4vw);
+}
+.part-right-row {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.commande-lenght{
+  font-family: "Monument";
+  color: var(--title);
+}
+
+.details{
+   text-transform: uppercase;
+   font-family: 'RobotoC';
+   line-height: 20px;
+   letter-spacing: -1px;
+   font-size: 18px;
+   color: var(--primary);
+   display: flex;
+   transition: 0.3s;
+}
+.details p{
+  transition: 0.3s;
+}
+.details:hover p{
+ margin-right: 10px;
+}
+
+.svg{
+  width: 20px;
+  background: url("../../../assets/svg/arrow.svg") center center / 28px
+    28px no-repeat;
+  cursor: pointer;
 }
 </style>

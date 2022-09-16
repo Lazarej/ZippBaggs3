@@ -52,7 +52,7 @@
             @mouseenter="showCategorieImg(categorie)"
             @mouseleave="hiddenCategorieImg"
           >
-            <h4>{{ categorie.attributes.name }}</h4>
+            <nuxt-link :to="`/categories/${categorie.id}`"><h4>{{ categorie.attributes.name }}</h4></nuxt-link>
             <nuxt-link
               class="nav-link"
               :to="`/produits/${produit.attributes.slug}`"
@@ -274,6 +274,7 @@ const  hiddenCategorieImg = () => {
   width: 100%;
   transition: 0.5s ease;
   transform-origin: bottom;
+  border-bottom: 0.5px solid #eaedea;
 }
 
 .nav-active-1 {

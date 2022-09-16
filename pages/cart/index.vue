@@ -120,7 +120,7 @@ onMounted(async () => {
   storeU.loadUserInstance();
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
-  });    
+  });  
 });
 
 const changeCount = (item) => {
@@ -131,14 +131,14 @@ const buy = async () => {
   const productId = displayCart.value.map((p)=>{
         return p.id
       })
+      
   if (storeU.user.login === true && displayCart.value.length !== 0) {
-    console.log(store.cart.cid)
+    const number =  store.cart.cId.slice(0,8)
     const body = {
-       uid: store.cart.cid,
+       uid: number,
        status:'En Préparation',
-       
        total: total2.value,
-       produits: productId,
+       produits:[...displayCart.value] ,
        user: storeU.user.id  
     };
     try {
@@ -153,8 +153,10 @@ const buy = async () => {
           body: JSON.stringify({data:body}),
         }
       )
+      console.log(data.json())
       store.reset();
       store.displayCartLoad(productData)
+
     } catch (error) {
        console.log(error)
     }
@@ -164,8 +166,6 @@ const buy = async () => {
 };
 
 const removeItem = (id: number, productData) => {
-  console.log(id);
-  console.log(productData);
   store.removeFromCart(id, productData);
 };
 </script>
@@ -311,6 +311,7 @@ const removeItem = (id: number, productData) => {
   height: 50px;
   width: 250px;
   font-size: 16px;
+  background: var(--background);
   font-family: "Roboto";
   text-transform: uppercase;
 }

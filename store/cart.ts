@@ -122,12 +122,12 @@ export const useCartStore = defineStore("cart", {
     },
 
     displayCartLoad(productData) {
-      console.log(this.cart);
 
       this.displayCart = (this.cart as Cart).products.map((ci) => {
         const requiredProduct = productData.filter(
           (p: { id: number }) => p.id == ci.id
         );
+        console.log(requiredProduct[0].attributes.name,)
         /*if (requiredProduct[0].attributes.quantity >= ci.qty)*/
         return {
           id: ci.id,

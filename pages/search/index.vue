@@ -11,64 +11,44 @@
     <div class="filtered-scroll-cont">
       <div class="filtered-content-cont">
         <p class="filtered-message">{{ message }}</p>
-        <div class="card-produit" v-for="(filter, id) in filters" :key="id">
-          <nuxt-link tag="a" :to="`/produits/${filter.attributes.slug}`">
-            <div class="card-image-cont">
-              <div
-              class="card-image"
-              :style="{
-                background: `url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`,
-              }"
-            >
-            </div>
-            </div>
-            <div class="info-card">
-              <p>{{ filter.attributes.name }}</p>
-              <p>{{ filter.attributes.price +' €' }}  </p>
-            </div>
-          </nuxt-link>
-        </div>
+       
+        <card  v-for="(filter, id) in filters" :key="id" :link="`/produits/${filter.attributes.slug}`" :image="`url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
+        :name="filter.attributes.name" :price="filter.attributes.price"></card>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Card from '~~/components/global/card.vue';
 export default {
-  setup() {
-    const searchText = ref("");
-    const produits = ref([]);
-    const filters = ref([]);
-    const test = ref("test");
-    const message = ref("");
-    const URL = "http://localhost:1337/api/produits?filters[slug][$contains]=";
-
-    onMounted(async () => {
-    });
-
-    watch(
-      () => searchText.value,
-      async (old, notOld)  =>  {
-        if (searchText.value.length !== 0) {
-          const grabData = await fetch(URL + searchText.value +'&populate=images' );
-
-      const json = await grabData.json();
-          filters.value = json.data
-          console.log(filters.value)
-
-          if (filters.value.length === 0) {
-            message.value = "Aucun produit trouvé";
-          } else {
-            message.value = "";
-          }
-        } else {
-          filters.value = [];
-        }
-      }
-    );
-
-    return { filters, searchText, produits, URL, test, message };
-  },
+    setup() {
+        const searchText = ref("");
+        const produits = ref([]);
+        const filters = ref([]);
+        const test = ref("test");
+        const message = ref("");
+        const URL = "http://localhost:1337/api/produits?filters[slug][$contains]=";
+        watch(() => searchText.value, async (old, notOld) => {
+            if (searchText.value.length !== 0) {
+                const grabData = await fetch(URL + searchText.value + "&populate=images");
+                const json = await grabData.json();
+                filters.value = json.data;
+                console.log(filters.value);
+                if (filters.value.length === 0) {
+                    message.value = "Aucun produit trouvé";
+                }
+                else {
+                    message.value = "";
+                }
+            }
+            else {
+                filters.value = [];
+            }
+        });
+        return { filters, searchText, produits, URL, test, message };
+    },
+    components: { Card }
 };
 </script>
 

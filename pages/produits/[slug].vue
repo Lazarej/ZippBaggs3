@@ -78,100 +78,96 @@
         </div>
       </div>
     </div>
+    <transition>
+      <Slider v-if="slideActive" :close="close">
+
+      </Slider>  
+    </transition>
   </Wrapper>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useCartStore } from "../../store/cart";
+
 import Wrapper from "../../components/global/wrapper.vue";
-export default {
-  components: { Wrapper },
+import Slider from "../../components/produits/slider.vue";
 
-  setup() {
-    const store = useCartStore();
-    const route = useRoute();
-    const produit = ref([]);
-    const index = ref(0);
-    const images = ref([]);
-    const direction = ref("");
-    const progress = ref();
-    const quantity = ref(1);
-    const id = ref();
-    const { cart } = storeToRefs(store);
-    const path = route.path
-    const add = () => {
-      
-      store.addToCart({ id: id.value, qty: quantity.value },path);
-    };
+const store = useCartStore();
+const route = useRoute();
+const produit = ref([]);
+const index = ref(0);
+const images = ref([]);
+const direction = ref("");
+const progress = ref();
+const quantity = ref(1);
+const id = ref();
+const { cart,} = storeToRefs(store);
+const path = route.path;
+const slideActive = ref(false);
 
-    const seeImg = (indexImg) => {
-      const heightI = document.getElementById("image").offsetHeight;
-      let iComp = document.getElementById("image-comp").style;
+const add = () => {
+  store.addToCart({ id: id.value, qty: quantity.value }, path);
+  slideActive.value = true;
+  console.log(slideActive.value);
+};
 
-      index.value = indexImg;
-      progress.value = (100 / images.value.length) * (index.value + 1);
-      iComp.transform = `translateY(-${index.value * heightI}px)`;
-    };
+const seeImg = (indexImg) => {
+  const heightI = document.getElementById("image").offsetHeight;
+  let iComp = document.getElementById("image-comp").style;
 
-    onMounted(async () => {
-      store.loadCartInstance();
-      const fetchData = await fetch(
-        `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
-      );
-      const json = await fetchData.json();
-      produit.value = json.data.attributes;
-      images.value = produit.value.images.data;
-      id.value = json.data.id;
-      images.value.forEach((image, index) => {
-        image.index = index;
-      });
+  index.value = indexImg;
+  progress.value = (100 / images.value.length) * (index.value + 1);
+  iComp.transform = `translateY(-${index.value * heightI}px)`;
+};
 
-      progress.value = 100 / images.value.length;
-    });
+const close = () =>{
+  slideActive.value = false
+}
 
-    const handleWheel = (event) => {
-      const y = event.deltaY;
-      const heightI = document.getElementById("image").offsetHeight;
-      const mult = index.value * heightI;
-      let iComp = document.getElementById("image-comp").style;
-      if (index.value >= images.value.length - 1) {
-        y < 0
-          ? index.value-- &&
-            (iComp.transform = `translateY(-${mult - heightI}px)`) &&
-            (progress.value =
-              (100 / images.value.length) * (index.value + 2) -
-              100 / images.value.length)
-          : null;
-      } else if (y < 0 && index.value !== 0) {
-        index.value--;
+onMounted(async () => {
+  store.loadCartInstance();
+  const fetchData = await fetch(
+    `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
+  );
+  const json = await fetchData.json();
+  produit.value = json.data.attributes;
+  console.log(produit.value)
+  images.value = produit.value.images.data;
+  id.value = json.data.id;
+  images.value.forEach((image, index) => {
+    image.index = index;
+  });
 
-        progress.value =
+  progress.value = 100 / images.value.length;
+});
+
+const handleWheel = (event) => {
+  const y = event.deltaY;
+  const heightI = document.getElementById("image").offsetHeight;
+  const mult = index.value * heightI;
+  let iComp = document.getElementById("image-comp").style;
+  if (index.value >= images.value.length - 1) {
+    y < 0
+      ? index.value-- &&
+        (iComp.transform = `translateY(-${mult - heightI}px)`) &&
+        (progress.value =
           (100 / images.value.length) * (index.value + 2) -
-          (100 / images.value.length - 1);
-        progress.value <= 3 ? (progress.value = 0) : null;
-        iComp.transform = `translateY(-${mult - heightI}px)`;
-      } else if (y > 0) {
-        index.value++;
-        progress.value = (100 / images.value.length) * (index.value + 1);
-        iComp.transform = `translateY(-${index.value * heightI}px)`;
-      }
-    };
+          100 / images.value.length)
+      : null;
+  } else if (y < 0 && index.value !== 0) {
+    index.value--;
 
-    return {
-      produit,
-      index,
-      images,
-      handleWheel,
-      direction,
-      progress,
-      seeImg,
-      quantity,
-      add,
-      store,
-      id,
-    };
-  },
+    progress.value =
+      (100 / images.value.length) * (index.value + 2) -
+      (100 / images.value.length - 1);
+    progress.value <= 3 ? (progress.value = 0) : null;
+    iComp.transform = `translateY(-${mult - heightI}px)`;
+  } else if (y > 0) {
+    index.value++;
+    progress.value = (100 / images.value.length) * (index.value + 1);
+    iComp.transform = `translateY(-${index.value * heightI}px)`;
+  }
 };
 </script>
 
@@ -318,7 +314,7 @@ export default {
 .price {
   font-size: 13px;
   font-family: "Nimbus";
-  color:var(--text);
+  color: var(--text);
   margin-bottom: 20px;
 }
 
@@ -355,5 +351,15 @@ export default {
   align-items: center;
   padding-left: 5px;
   border: none;
+}
+
+
+
+.slide {
+  right: 0;
+}
+.v-enter-from,
+.v-leave-to {
+  right: -30%;
 }
 </style>

@@ -58,7 +58,7 @@ export const userStore = defineStore("user", {
               id: responseJSON.user.id,
               email: responseJSON.user.email,
               login: true,
-              address: responseJSON.user.address,
+              adresse: responseJSON.user.address,
               cart: {
                 cId:  cartStore.cart.cid,  
                 products: merge,
@@ -80,8 +80,9 @@ export const userStore = defineStore("user", {
         username: formCreate.firstname + " " + formCreate.lastname,
         email: formCreate.email,
         password: formCreate.password,
-        address: formCreate.address,
+        adresse: formCreate.adresse,
       };
+      console.log(body)
       try {
         const data = await fetch(
           "http://localhost:1337/api/auth/local/register",
@@ -94,21 +95,25 @@ export const userStore = defineStore("user", {
           }
         )
           .then((response) => response.json())
+         
           .then((responseJSON) => {
+            console.log(responseJSON);
             (this.user as User) = {
               token: responseJSON.jwt,
               username: responseJSON.user.username,
               id: responseJSON.user.id,
               email: responseJSON.user.email,
               login: true,
-              address: responseJSON.user.address,
+              adresse: responseJSON.user.adresse,
               cart: [],
             };
+            
           });
         (this.user as User).cart.push.apply(
           (this.user as User).cart,
           cartStore.cart.products
         );
+        console.log(this.user)
 
         localStorage.setItem("user", JSON.stringify(this.user));
       } catch (error) {
@@ -125,7 +130,7 @@ export const userStore = defineStore("user", {
         id: null,
         email: null,
         login: false,
-        address: null,
+        adresse: null,
         cart: { cId: cartStore.cart.cid, products: cartStore.cart.products },
       }
       
