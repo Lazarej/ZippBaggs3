@@ -237,7 +237,6 @@ const send = async () => {
   if (login.value == true) {
     if (validation.value.error === false) {
       await store.login(formLog.value.email, formLog.value.password);
-      router.push({ path: "/user" });
     }
   } else {
     if (validation.value.error === false) {

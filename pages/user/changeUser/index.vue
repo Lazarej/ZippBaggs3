@@ -64,7 +64,7 @@
             </div>
           </div>
         </form>
-        <button @click="change"></button>
+        <button @click="validate"></button>
   </Wrapper>
 </template>
 
@@ -90,7 +90,6 @@ const validation = ref({
 onBeforeMount(()=>{
   store.loadUserInstance(); 
   if(store.user.login === false || store.user.login === undefined){
-    console.log('non');
     return navigateTo({ path: '/auth' });
   }
 });
@@ -129,17 +128,37 @@ const getError = (index) => {
   });
 };
 
-const validate = () => {
-  console.log(userData.value)
-    if (
-      (formChange.value.oldPassword === user.value.password &&
-      formChange.value.password.length > 5) === false
-    ) {
+const  validate = async () => {
+
+    if ((formChange.value.newPassword.length > 5) === false ){
+      console.log('oui')
       validation.value.error = true;
       validation.value.errorMessages.push({
-        index: "passwordChange",
+        index: "newPassword",
         message: "Les mots de passe ne correspondent pas",
       });
+    }else{
+      try {
+        console.log('caca')
+        await fetch("http://localhost:1337/api/auth/local", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${store.user.token}`,
+          },
+          method: "POST",
+          body: JSON.stringify({
+            password: formChange.value.oldPassword,
+            email: userData.value.email
+          }),
+        })
+        
+        .then((response) => response.json())
+          .then((responseJSON) => {
+            console.log(responseJSON)
+          });
+      }catch(error){
+       
+      }
     }
   
     if (formChange.value.email.length < 1) {

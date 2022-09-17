@@ -79,7 +79,7 @@ export const useCartStore = defineStore("cart", {
       const cs = localStorage.getItem("cart");
       console.log(this.cart);
       let isAdded = false;
-      if (!cs)
+      if (cs)
         console.log("no storage", cs),
           (this.cart = {
             cid: uuid4(),

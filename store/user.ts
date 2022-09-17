@@ -27,15 +27,14 @@ export const userStore = defineStore("user", {
       });
      
       if (data.status === 401) this.user = {};
-      console.log(this.user)
     },
 
     
 
     async login(email, password,) {
+      const router = useRouter();
       const cartStore = useCartStore();
       const us = JSON.parse(localStorage.getItem("user"));
-      console.log(!cartStore)
       let ids = new Set(cartStore.cart.products.map(d => d.id));
       let merge = us.cart.products === undefined || !us ? cartStore.cart.products :  [...cartStore.cart.products, ...us.cart.products.filter(d => !ids.has(d.id))];
       
@@ -50,21 +49,30 @@ export const userStore = defineStore("user", {
             password: password,
           }),
         })
-          .then((response) => response.json())
-          .then((responseJSON) => {
-            (this.user as User) = {
-              token: responseJSON.jwt,
-              username: responseJSON.user.username,
-              id: responseJSON.user.id,
-              email: responseJSON.user.email,
-              login: true,
-              adresse: responseJSON.user.address,
-              cart: {
-                cId:  cartStore.cart.cid,  
-                products: merge,
-              },
-            };
-          });
+          .then((response) => {
+            if(response.ok){
+              response.json().then((responseJSON) => {
+                console.log('ouail');
+                (this.user as User) = {
+                  token: responseJSON.jwt,
+                  username: responseJSON.user.username,
+                  id: responseJSON.user.id,
+                  email: responseJSON.user.email,
+                  login: true,
+                  adresse: responseJSON.user.address,
+                  cart: {
+                    cId:  cartStore.cart.cid,  
+                    products: merge,
+                  },
+                };
+              });
+              router.push({ path: "/user" });
+            }else{
+              console.log("error")
+            }
+          })
+          
+          
         
         
         localStorage.setItem("user", JSON.stringify(this.user));
