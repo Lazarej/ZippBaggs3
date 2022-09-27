@@ -53,12 +53,12 @@ const store = userStore();
 const { user } = storeToRefs(store);
 
 
-onBeforeMount(()=>{
+/*onBeforeMount(()=>{
   store.loadUserInstance(); 
   if(store.user.login === false || store.user.login === undefined){
     return navigateTo({ path: '/auth' })
   }
-})
+})*/
 
 </script>
 

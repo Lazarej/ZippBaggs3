@@ -3,26 +3,23 @@ import { v4 as uuid4 } from "uuid";
 import { Cart, Product, DisplayCart } from "../types/interfaces";
 import { userStore } from "../store/user";
 import { storeToRefs } from "pinia";
+import { f } from "ohmyfetch/dist/error-d4c70d05";
 
 interface State {
   cart: Cart | {};
   displayCart: DisplayCart[] | [];
-  timer: Number | null
+  timer: Number | null;
 }
 
 export const useCartStore = defineStore("cart", {
   state: () => ({ cart: {}, displayCart: {}, timer: null } as State),
-  getters: {
-
-  },
+  getters: {},
   actions: {
     loadCartInstance() {
       const storeU = userStore();
       const cs = localStorage.getItem("cart");
-      console.log(cs);
-      if (!cs) this.cart = {};
+      if (cs === "undefined" || !cs) this.cart = {};
       else this.cart = JSON.parse(cs);
-      console.log("load", this.cart.cid);
     },
 
     reset() {
@@ -30,42 +27,6 @@ export const useCartStore = defineStore("cart", {
       (this.cart as Cart).products = [];
       (this.cart as Cart).cId = uuid4();
       localStorage.setItem("cart", JSON.stringify(this.cart));
-      console.log(this.cart.cId);
-      console.log(localStorage.getItem("cart"));
-    },
-
-
-    timer(productData) {
-      let date = new Date().getTime();
-      const hour = Math.floor(1000 * 60 * 60);
-      const minute = Math.floor(hour / 60);
-      const test = Math.floor(minute * 60);
-      const deadline = date + 10000;
-
-      console.log("now", date);
-      console.log("deadline", deadline);
-      console.log("hour", hour);
-      console.log("minute", minute);
-      console.log(test);
-
-      const interval = setInterval(() => {
-        date = date + 1000;
-
-        console.log(date, "", +1);
-        if (date >= deadline) {
-          console.log("test reussi");
-          this.cart.products = [];
-          
-          this.displayCartLoad(productData);
-          localStorage.setItem("cart", JSON.stringify(this.cart));
-          clearInterval(interval);
-        }
-      }, 1000);
-
-      
-
-      console.log(this.cart);
-      console.log(localStorage.getItem("cart"));
     },
 
     mutation() {
@@ -79,30 +40,44 @@ export const useCartStore = defineStore("cart", {
       const cs = localStorage.getItem("cart");
       console.log(this.cart);
       let isAdded = false;
-      if (cs)
+      if (!cs)
         console.log("no storage", cs),
           (this.cart = {
             cid: uuid4(),
             products: [product],
           });
       else {
-        console.log("storage", cs);
         let cartLocalStorage = JSON.parse(cs);
-        console.log(cartLocalStorage);
         cartLocalStorage.products = cartLocalStorage.products.map(
           (ci: Product) => {
-            if (ci.id == product.id) {
-              isAdded = true;
-              if (path === "/cart") {
-                return { id: ci.id, qty: product.qty };
-              } else {
-                return { id: ci.id, qty: ci.qty + product.qty };
+            console.log((ci.hasOwnProperty("idOfProduct") && product.hasOwnProperty("idOfProduct")) === true)
+            if (ci.hasOwnProperty("idOfProduct")) {
+              console.log("contain property", ci.idOfProduct , product.id,product);
+              if (ci.id == product.id) {
+                console.log("contain idofprod");
+                isAdded = true;
+                if (path === "/cart") {
+                  console.log("contain path /cart");
+                  return { id: ci.id, qty: product.qty, idOfProduct: ci.idOfProduct};
+                } else {
+                  return { id: ci.id, qty: ci.qty + product.qty,idOfProduct: ci.idOfProduct };
+                }
               }
+              return { id: ci.id, qty: ci.qty,idOfProduct: ci.idOfProduct };
+            } else {
+              if (ci.id == product.id) {
+                isAdded = true;
+                if (path === "/cart") {
+                  return { id: ci.id, qty: product.qty };
+                } else {
+                  return { id: ci.id, qty: ci.qty + product.qty };
+                }
+              }
+              return { id: ci.id, qty: ci.qty };
             }
-            return { id: ci.id, qty: ci.qty };
           }
         );
-
+        console.log(cartLocalStorage.products, 'the end')   
         if (!isAdded)
           cartLocalStorage.products.push({ id: product.id, qty: product.qty });
 
@@ -122,12 +97,21 @@ export const useCartStore = defineStore("cart", {
     },
 
     displayCartLoad(productData) {
+      console.log(this.cart);
+      console.log(productData);
 
       this.displayCart = (this.cart as Cart).products.map((ci) => {
-        const requiredProduct = productData.filter(
-          (p: { id: number }) => p.id == ci.id
-        );
-        console.log(requiredProduct[0].attributes.name,)
+        console.log(ci);
+        const requiredProduct = productData.filter((p: { id: number }) => {
+          if (ci.hasOwnProperty("idOfProduct")) {
+            console.log(p.id == ci.idOfProduct);
+            return p.id == ci.idOfProduct;
+          } else {
+            console.log(p.id == ci.id);
+            return p.id == ci.id;
+          }
+        });
+        console.log(requiredProduct[0]);
         /*if (requiredProduct[0].attributes.quantity >= ci.qty)*/
         return {
           id: ci.id,
@@ -142,8 +126,7 @@ export const useCartStore = defineStore("cart", {
           total: requiredProduct[0].attributes.price * ci.qty,
         };
       });
+      console.log(this.displayCart);
     },
   },
 });
-
-

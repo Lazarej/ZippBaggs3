@@ -3,7 +3,7 @@ export interface Cart{
     products: Array<Product>
   }
 
-export  interface Product{id:number, qty:number}
+export  interface Product{id:number, qty:number, idOfProduct:number}
 
 export interface DisplayCart {
     name: string,

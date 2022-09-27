@@ -92,12 +92,18 @@ const imageBack = ref(false);
 const delayTransition = ref(300);
 const categories = ref([]);
 
+
+const { data: grabData } = await useFetch(
+  "http://localhost:1337/api/produits/?populate=*"
+);
+const productData = grabData.value.data;
+
 onMounted(async () => {
   await store.loadUserInstance();
   const { data: response } = await useFetch(
     "http://localhost:1337/api/categories?populate=*"
   );
-  categories.value = response._rawValue.data;
+  categories.value = response._rawValue.data; 
 });
 
 function toggle() {
@@ -107,7 +113,7 @@ function toggle() {
 }
 
 const logout = () => {
-  store.logout();
+  store.logout(productData);
   router.push({ path: '/' })
 };
 
