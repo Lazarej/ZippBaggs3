@@ -43,18 +43,6 @@
         </div>
       </div>
     </div>
-    <div class="pay-cont">
-      <StripeElements
-        v-if="stripeLoaded"
-        v-slot="{ elements, instance }"
-        ref="elms"
-        :stripe-key="stripeKey"
-        :instance-options="instanceOptions"
-        :elements-options="elementsOptions"
-      >
-        <StripeElement ref="card" :elements="elements" :options="cardOptions" />
-      </StripeElements>
-    </div>
     <div class="total-buy">
       <div class="btn-total">
         <p>
@@ -72,7 +60,6 @@ import { useCartStore } from "../../store/cart";
 import { DisplayCart } from "../../types/interfaces";
 import Wrapper from "../../components/global/wrapper.vue";
 import { userStore } from "../../store/user";
-import { StripeElements, StripeElement } from "vue-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
 const router = useRouter();
@@ -80,27 +67,12 @@ const store = useCartStore();
 const storeU = userStore();
 const { cart, displayCart } = storeToRefs(store);
 const path = useRoute().path;
+const route = useRoute();
 const total2 = ref(0);
-const stripeKey = ref(
-  "pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9"
-);
-const instanceOptions = ref({});
-const elementsOptions = ref({});
-const cardOptions = ref({
-  value: {
-    postalCode: "12345",
-  },
-});
-const stripeLoaded = ref(false);
-const card = ref();
-const elms = ref();
-
-onBeforeMount(() => {
-  const stripePromise = loadStripe(stripeKey.value);
-  stripePromise.then(() => {
-    stripeLoaded.value = true;
-  });
-});
+const dataItem = ref({});
+const session = ref({});
+const stripe = ref({});
+const stripePromise = ref({});
 
 computed(() => {
   let sum = displayCart.value.forEach((item) => {
@@ -120,20 +92,58 @@ onMounted(async () => {
   storeU.loadUserInstance();
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
-  });  
+  });
+
+  console.log(route.query.success)
+  console.log(route.query.canceled)
 });
 
 const changeCount = (item) => {
   store.addToCart({ id: item.id, qty: item.qty }, path);
 };
 
-const buy = async () => {
-  const productId = displayCart.value.map((p)=>{
-        return p.id
-      })
-      
+const buy = async (e) => {
+  e.preventDefault();
+  const productId = displayCart.value.map((p) => {
+    return p.id;
+  });
+
   if (storeU.user.login === true && displayCart.value.length !== 0) {
-    const number =  store.cart.cId.slice(0,8)
+    console.log(displayCart.value)
+    const body = {
+      cartDetail: displayCart.value,
+      cartTotal: total2,
+    };
+
+    const response = await fetch("http://localhost:1337/api/orders", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${storeU.user.token}`,
+      },
+      method: "POST",
+      body: JSON.stringify(body),
+    })
+    .then((response) => {
+      if (response.ok) {
+        response.json().then(async (responseJSON) => {
+          console.log(responseJSON);
+          const stripePromise = loadStripe('pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9');
+          const session = responseJSON;
+          const stripe = await stripePromise;
+          const result = await stripe.redirectToCheckout({
+            sessionId: session.id,
+          });
+          if (result.error) {
+            console.log(result.error.message);
+          } 
+        });
+      }
+    }).catch(e => {
+      if(e.status === 400){
+        console.log(e)
+      }
+    });
+    /*const number =  store.cart.cId.slice(0,8)
     const body = {
        uid: number,
        status:'En Préparation',
@@ -159,11 +169,20 @@ const buy = async () => {
 
     } catch (error) {
        console.log(error)
-    }
+    }*/
   } else {
     router.push({ path: "/auth" });
   }
 };
+
+const checkPath = () => {
+  if(route.query.success){
+    store.reset();
+    store.displayCartLoad(productData)
+  }else if(route.query.canceled){
+
+  }
+}
 
 const removeItem = (id: number, productData) => {
   store.removeFromCart(id, productData);

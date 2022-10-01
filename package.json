@@ -7,7 +7,7 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@stripe/stripe-js": "^1.35.0",
+    "@stripe/stripe-js": "^1.38.1",
     "@types/uuid": "^8.3.4",
     "nuxt": "3.0.0-rc.6",
     "vue-stripe-js": "^1.0.1"
@@ -15,6 +15,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.3.1",
     "js-cookie": "^3.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "vue-stripe-elements-plus": "^1.0.3"
   }
 }

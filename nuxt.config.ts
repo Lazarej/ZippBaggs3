@@ -5,9 +5,13 @@ export default defineNuxtConfig({
     css: [
         '~/assets/css/main.css',
       ],
+      head: {
+        script: [{ src: 'https://js.stripe.com/v3/' }],
+      },
 
       buildModules: [
        
         '@pinia/nuxt',
+        
       ],
 })
