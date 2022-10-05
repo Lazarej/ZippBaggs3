@@ -106,6 +106,7 @@ export const userStore = defineStore("user", {
 
               localStorage.setItem("user", JSON.stringify(this.user));
               cartStore.mutation();
+              router.push({ path: "/user" });
             });
           } else {
             console.log("error");
@@ -119,11 +120,12 @@ export const userStore = defineStore("user", {
     async create(formCreate: {
       firstname: string;
       lastname: string;
-      email: any;
-      password: any;
-      adresse: any;
+      email: string;
+      password: string;
+      adresse: string;
     }) {
       const cartStore = useCartStore();
+      const router = useRouter();
       const body = {
         username: formCreate.firstname + " " + formCreate.lastname,
         email: formCreate.email,
@@ -140,54 +142,59 @@ export const userStore = defineStore("user", {
             method: "POST",
             body: JSON.stringify(body),
           }
-        )
-          .then((response) => response.json())
+        ).then((response) => {
+          if (response.ok) {
+            response.json().then((responseJSON) => {
+              console.log(responseJSON, "ok");
+              (this.user as User) = {
+                token: responseJSON.jwt,
+                username: responseJSON.user.username,
+                id: responseJSON.user.id,
+                email: responseJSON.user.email,
+                login: true,
+                adresse: responseJSON.user.adresse,
+                cart: {
+                  cId: cartStore.cart.uid,
+                  products: cartStore.cart.products,
+                },
+              };
+              localStorage.setItem("user", JSON.stringify(this.user));
+          router.push({path:'/'})
+          console.log(this.user);
+            });
 
-          .then((responseJSON) => {
-            console.log(responseJSON);
-            (this.user as User) = {
-              token: responseJSON.jwt,
-              username: responseJSON.user.username,
-              id: responseJSON.user.id,
-              email: responseJSON.user.email,
-              login: true,
-              adresse: responseJSON.user.adresse,
-              cart: [],
-            };
-          });
-        (this.user as User).cart.push.apply(
-          (this.user as User).cart,
-          cartStore.cart.products
-        );
-        console.log(this.user);
-
-        localStorage.setItem("user", JSON.stringify(this.user));
+           
+          }
+        });
       } catch (error) {
         console.log(error);
       }
     },
 
-    async change(formChange: { email: any; newPassword: any; adresse: any }) {
+    async change(formChange: {
+      email: any;
+      newPassword: any;
+      adresse: any;
+      oldPassword: any;
+    }) {
       const body = {
-        email: formChange.email,
-        password: formChange.newPassword,
-        adresse: formChange.adresse,
+        identifier: this.user.name,
+        oldPassword: formChange.oldPassword,
+        newPassword: formChange.newPassword,
+        confirmPassword: formChange.newPassword,
       };
       try {
-        const data = await fetch(
-          `http://localhost:1337/api/users/${this.user.id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.user.token}`,
-            },
-            method: "PUT",
-            body: JSON.stringify(body),
-          }
-        );
+        const data = await fetch(`http://localhost:1337/api/password`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.user.token}`,
+          },
+          method: "POST",
+          body: JSON.stringify(body),
+        });
         console.log(data.json());
 
-        localStorage.setItem("user", JSON.stringify(this.user));
+        /*localStorage.setItem("user", JSON.stringify(this.user));*/
       } catch (error) {
         console.log(error);
       }
@@ -195,6 +202,7 @@ export const userStore = defineStore("user", {
 
     async logout(productData: any) {
       const cartStore = useCartStore();
+      cartStore.loadCartInstance();
       let productId = [];
 
       cartStore.cart.products.map(async (p: Product) => {
@@ -291,7 +299,7 @@ export const userStore = defineStore("user", {
           }
         );
       }
-        this.user = {
+      this.user = {
         token: null,
         username: null,
         id: null,

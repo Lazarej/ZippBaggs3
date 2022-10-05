@@ -20,6 +20,7 @@
             ></div>
             <div class="info-card-cont">
               <div class="multi-select">
+                {{item.qty}}
                 <select
                   class="select"
                   name="quantity"
@@ -93,9 +94,7 @@ onMounted(async () => {
   displayCart.value.forEach((item) => {
     total2.value = total2.value + item.price * item.qty;
   });
-
-  console.log(route.query.success)
-  console.log(route.query.canceled)
+  checkPath();
 });
 
 const changeCount = (item) => {
@@ -143,7 +142,31 @@ const buy = async (e) => {
         console.log(e)
       }
     });
-    /*const number =  store.cart.cId.slice(0,8)
+    /**/
+  } else {
+    router.push({ path: "/auth" });
+  }
+};
+
+const checkPath = async  () => {
+  if(route.query.success){
+    const number =  store.cart.cId.slice(0,8)
+    displayCart.value.forEach(async(i)=>{
+    console.log(i.reste)
+    const body = {
+      quantity: i.reste
+    }
+      const data = await fetch(
+         `http://localhost:1337/api/produits/${i.id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "PUT",
+          body: JSON.stringify({data: body}),
+        }
+      ).then((response) => console.log(response.json()))
+    })
     const body = {
        uid: number,
        status:'En Préparation',
@@ -163,22 +186,14 @@ const buy = async (e) => {
           body: JSON.stringify({data:body}),
         }
       )
-      console.log(data.json())
       store.reset();
-      store.displayCartLoad(productData)
+      store.displayCartLoad(productData);
+      total2.value = 0;
 
     } catch (error) {
        console.log(error)
-    }*/
-  } else {
-    router.push({ path: "/auth" });
-  }
-};
-
-const checkPath = () => {
-  if(route.query.success){
-    store.reset();
-    store.displayCartLoad(productData)
+    }
+   
   }else if(route.query.canceled){
 
   }

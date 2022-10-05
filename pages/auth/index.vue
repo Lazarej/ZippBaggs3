@@ -1,9 +1,10 @@
 <template>
   <Wrapper>
+    <PopUp :stepForgot="stepForgot"></PopUp>
     <div class="auth-cont">
       <div class="auth-page">
         <div>
-          <h2 v-if="login === true" class="title-auth">Connéction</h2>
+          <h2 v-if="login === true" class="title-auth">Connexion</h2>
           <h2 v-else class="title-auth">S'incrire</h2>
         </div>
         <form class="form form-login" v-if="login" action="">
@@ -22,6 +23,7 @@
               >{{ getError("password").message }}</small
             >
           </div>
+          <p>si vous avez oublié votre mot de passe <span @click="(stepForgot.active = true) && (stepForgot.step1 = true)">cliquez ici</span></p>
         </form>
 
         <form class="form form-create" v-else action="">
@@ -142,13 +144,19 @@
 import { storeToRefs } from "pinia";
 import { userStore } from "../../store/user";
 import Wrapper from "../../components/global/wrapper.vue";
+import PopUp from "~~/components/auth/popUp.vue";
 
 const router = useRouter();
+const route = useRoute();
 const store = userStore();
 const { user } = storeToRefs(store);
 const login = ref(true);
-const test = ref({});
-
+ const stepForgot = ref({
+  active:false,
+  step1: false,
+  step2:false,
+  step3: false
+ })
 const validation = ref({
   error: false,
   errorMessages: [],
@@ -166,6 +174,11 @@ const formCreate = ref({
   password: "",
   repeatPassword: "",
   adresse: "",
+});
+
+onMounted( () => {
+
+  route.query.code !== undefined ? (stepForgot.value.step2 = true) && (stepForgot.value.active = true) : null
 });
 
 const getError = (index) => {
@@ -232,16 +245,17 @@ const validate = () => {
   }
 };
 
-const send = async () => {
+const send =  () => {
   validate();
   if (login.value == true) {
     if (validation.value.error === false) {
-      await store.login(formLog.value.email, formLog.value.password);
+      store.login(formLog.value.email, formLog.value.password);
+      
     }
   } else {
     if (validation.value.error === false) {
-      await store.create(formCreate.value);
-      router.push({ path: "/user" });
+      store.create(formCreate.value);
+      
     }
   }
 };
@@ -272,6 +286,19 @@ const send = async () => {
   margin-bottom: 40px;
 }
 
+.form-login p{
+  font-family: "Montserrat";
+    font-size: 14px;
+    letter-spacing: -1px;
+    line-height: 17px;
+    color: var(--text);
+}
+
+.form-login p span{
+  font-weight: 800;
+  color:var(--title) ;
+  margin: 0 5px 0 5px;
+}
 .form-create {
   flex-direction: row;
   width: auto;
@@ -338,4 +365,12 @@ const send = async () => {
   text-transform: uppercase;
   background: var(--background);
 }
+
+.close {
+  width: 30px;
+  height: 30px;
+  background: url("../../assets/svg/close.svg") center center / 30px;
+  margin-right: 30px;
+}
+
 </style>

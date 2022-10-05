@@ -2,69 +2,93 @@
   <Wrapper>
     <Header :title="'Change tes infos personelle'"></Header>
     <form class="form form-change" action="">
-          <div class="column-form">
-          
-            <div class="input-cont">
-              <label for="email">Email</label>
-              <input
-                id="email"
-
-                type="email"
-                v-model="formChange.email"
-              />
-              <small
-                v-if="validation.error && getError('email') !== undefined"
-                >{{ getError("email").message }}</small
-              >
-            </div>
-            <div class="input-cont">
-              <label for="oldPassword">Mot de passe actuel</label>
-              <input
-                id="oldPassword"
-                placeholder="Password"
-                type="password"
-                v-model="formChange.oldPassword"
-              />
-              <small
-                v-if="validation.error && getError('oldPassword') !== undefined"
-                >{{ getError("oldPassword").message }}</small
-              >
-            </div>
+          <div class="part-left">
            
-          </div>
-          <div class="column-form">
-         
-            <div class="input-cont">
-              <label for="adresse">Adresse</label>
-              <input
-                id="adresse"
-                type="text"
-                v-model="formChange.adresse"
-              />
+            <div class="column-form">
+          <div class="input-cont">
+            <label for="email">Email</label>
+            <input
+              id="email"
 
-              <small
-                v-if="validation.error && getError('adresse') !== undefined"
-                >{{ getError("adresse").message }}</small
-              >
-            </div>
-            <div class="input-cont">
-              <label for="newPassword">Nouveau mot de passe</label>
-              <input
-                id="newPassword"
-                placeholder="Repeter le mot de passe"
-                type="password"
-                v-model="formChange.newPassword"
-              />
-              <small
-                v-if="
-                  validation.error && getError('newPassword') !== undefined
-                "
-                >{{ getError("newPassword").message }}</small
-              >
-            </div>
+              type="email"
+              v-model="formChange.email"
+            />
+            <small
+              v-if="validation.error && getError('email') !== undefined"
+              >{{ getError("email").message }}</small
+            >
           </div>
+          <div class="input-cont">
+            <label for="oldPassword">Mot de passe actuel</label>
+            <input
+              id="oldPassword"
+              placeholder="Password"
+              type="password"
+              v-model="formChange.oldPassword"
+            />
+            <small
+              v-if="validation.error && getError('oldPassword') !== undefined"
+              >{{ getError("oldPassword").message }}</small
+            >
+          </div>
+          
+        </div>
+        <div class="column-form">
+       
+          <div class="input-cont">
+            <label for="adresse">Adresse</label>
+            <input
+              id="adresse"
+              type="text"
+              v-model="formChange.adresse"
+            />
+
+            <small
+              v-if="validation.error && getError('adresse') !== undefined"
+              >{{ getError("adresse").message }}</small
+            >
+          </div>
+          
+        </div>
+
+          </div>
+          <div class="part-right">
+            <h3>Changez votre mot de passe</h3>
+            <p>Pur cela vous devez impérativement entrer votre mot de passe actuel dans le formulaire a gauche.</p>
+            <div class="input-cont">
+            <label for="newPasswordRepeat">Repeter le nouveau mot de passe</label>
+            <input
+              id="newPasswordRepeat"
+              placeholder="Repeter le mot de passe"
+              type="password"
+              v-model="formChange.newPasswordRepeat"
+            />
+            <small
+              v-if="
+                validation.error && getError('newPasswordRepeat') !== undefined
+              "
+              >{{ getError("newPasswordRepeat").message }}</small
+            >
+          </div>
+          <div class="input-cont">
+            <label for="newPassword">Nouveau mot de passe</label>
+            <input
+              id="newPassword"
+              placeholder="Repeter le mot de passe"
+              type="password"
+              v-model="formChange.newPassword"
+            />
+            <small
+              v-if="
+                validation.error && getError('newPassword') !== undefined
+              "
+              >{{ getError("newPassword").message }}</small
+            >
+          </div>
+          </div>
+        
         </form>
-        <button @click="validate"></button>
+        <button class="btn" @click="change">Changez</button>
   </Wrapper>
 </template>
 
@@ -118,6 +142,7 @@ const formChange = ref({
 email: "",
 oldPassword: "",
 newPassword: "",
+newPasswordRepeat:"",
 adresse: "",
 });
 
@@ -137,28 +162,6 @@ const  validate = async () => {
         index: "newPassword",
         message: "Les mots de passe ne correspondent pas",
       });
-    }else{
-      try {
-        console.log('caca')
-        await fetch("http://localhost:1337/api/auth/local", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${store.user.token}`,
-          },
-          method: "POST",
-          body: JSON.stringify({
-            password: formChange.value.oldPassword,
-            email: userData.value.email
-          }),
-        })
-        
-        .then((response) => response.json())
-          .then((responseJSON) => {
-            console.log(responseJSON)
-          });
-      }catch(error){
-       
-      }
     }
   
     if (formChange.value.email.length < 1) {
@@ -177,9 +180,30 @@ const  validate = async () => {
     }   
 };
 
-const change = () => {
+const change = async () => {
   validate();
-  store.change(formChange.value)
+  try {
+        console.log('caca')
+        await fetch("http://localhost:1337/api/auth/change-password", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${store.user.token}`,
+          },
+          method: "POST",
+          body: JSON.stringify({
+            currentPassword: formChange.value.oldPassword,
+            password: formChange.value.newPassword,
+            passwordConfirmation: formChange.value.newPasswordRepeat,
+          }),
+        })
+        
+        .then((response) => response.json())
+          .then((responseJSON) => {
+            console.log(responseJSON)
+          });
+      }catch(error){
+       console.log(error)
+      }
 }
 
 </script>
@@ -191,8 +215,49 @@ const change = () => {
   margin-top: 80px;
   flex-direction: row;
   width: auto;
+  justify-content: space-between;
 }
 
+.part-left{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.part-left h3{
+  font-size: 24px;
+    margin-bottom: 20px;
+    line-height: 90%;
+    font-family: "Nimbus";
+}
+
+.part-left p{
+  font-family: "Montserrat";
+    font-size: 12px;
+    letter-spacing: -1px;
+    line-height: 17px;
+    color: var(--text);
+    margin-bottom: 20px;
+}
+.part-right{
+  width: 300px;
+  margin-right: calc(40px + 5vw);
+}
+
+.part-right h3{
+  font-size: 24px;
+    margin-bottom: 20px;
+    line-height: 90%;
+    font-family: "Nimbus";
+}
+
+.part-right p{
+  font-family: "Montserrat";
+    font-size: 12px;
+    letter-spacing: -1px;
+    line-height: 17px;
+    color: var(--text);
+    margin-bottom: 20px;
+}
 .column-form {
   width: 300px;
   margin-right: 40px;
@@ -221,6 +286,16 @@ const change = () => {
   border-bottom: black 1px solid;
   font-size: 16px;
   line-height: -50px;
+}
+
+.btn{
+  width: 350px;
+  height: 50px;
+  font-size: 15px;
+  border-color: var(--title);
+  font-family: "Roboto";
+  text-transform: uppercase;
+  background: var(--background);
 }
 
 </style>
