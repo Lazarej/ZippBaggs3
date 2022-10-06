@@ -1,47 +1,37 @@
 <template>
   <section class="meilleurs-vente">
     <h2>Nos meilleurs ventes</h2>
-    <div class="best-product-cont" >
-      <div class="best-product">
-        <div class="best-product-card" v-for="(bestProduct,id) in bestProducts" :key="id">
-          <div class="card-image" :style="{ background: `url(${bestProduct.image}) center /cover no-repeat` }">
-          </div>
-          <div class="card-info">
-            <p>{{bestProduct.name}}</p>
-            <p>{{bestProduct.prix}}</p>
-          </div>         
-        </div>
+    <div class="best-product-cont" id="pc" >
+      <div class="best-product" @wheel="scrollX($event)">
+        <Card v-for="(bestProduct,id) in bestProducts" :key="id" :height="'90%'" :width="'350px'" :link="`/produits/${bestProduct.attributes.slug}`" :image="`url(http://localhost:1337${bestProduct.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
+        :name="bestProduct.attributes.name" :price="bestProduct.attributes.price"></Card>
       </div>
     </div>
   </section>
 </template>
 
-<script>
-export default {
-  name: "Meilleursvente",
+<script setup>
+import Card from '../global/card.vue';
+  let bestProducts = ref([]);
+  let scrollVal = ref()
+  onMounted(()=>{
+    bestProduct();
+  })
 
-  props: ["myJson"],
-
-  data() {
-    return {
-      bestProducts: [],
-    };
-  },
-
-  
-
-  mounted() {
-    this.myJson.categories.forEach((cat) => {
-      cat.produits.map((item) => this.bestProducts.push(item));
-    });
-
-    while (this.bestProducts.length > 5) {
-      var min = Math.min(...this.bestProducts.map((item) => item.vendu));
-      var indexOfMin = this.bestProducts.findIndex(
-        (bestProduct) => bestProduct.vendu == min
-      );
-      this.bestProducts.splice(indexOfMin, 1);
-    }
+  const bestProduct = async () =>{
+    const data = await fetch('http://localhost:1337/api/produits?populate=*',{
+      headers:{
+        "Content-Type": "application/json",
+      },
+      method:'GET'
+    }).then((response) => response.json().then((responseJson) =>{
+      const ascending = responseJson.data.sort((a,b)=>{
+        return  b.attributes.sold  - a.attributes.sold
+      })
+      bestProducts.value = ascending.splice(0,5)
+      console.log(bestProducts.value)
+      
+    }))
 
    /*let slider = document.querySelector('.best-product');
     let innerSlider = document.querySelector('.best-product-card');
@@ -56,10 +46,28 @@ export default {
       console.log(innerSlider.offsetLeft)
       slider.style.cursor = 'grabbing'
     } )*/
-  },
+  }
 
-  
-};
+  const scrollX = (e) =>{
+    
+    const div = document.getElementById('pc')
+   console.log(e.currentTarget.getBoundingClientRect().top ,'  ', window.scrollY)
+     
+    if((e.currentTarget.scrollLeft === 0) && (e.deltaY <0)){
+      console.log('yoyo')
+      e.currentTarget.scrollLeft += (e.deltaY >0 ? e.deltaY + 300 : e.deltaY - 300) ;
+    }
+    if((scrollVal.value === e.currentTarget.scrollLeft) && (e.deltaY >0)){
+      console.log('tete')
+      e.currentTarget.scrollLeft += (e.deltaY >0 ? e.deltaY + 300 : e.deltaY - 300) ;
+    }else{
+      e.preventDefault();
+      e.currentTarget.scrollLeft += (e.deltaY >0 ? e.deltaY + 300 : e.deltaY - 300) ;
+    }
+       scrollVal.value = e.currentTarget.scrollLeft
+
+  }
+
 </script>
 
 <style lang="css" scoped>
@@ -86,6 +94,7 @@ export default {
   overflow: hidden;
   overflow-x: scroll;
   display: flex;
+  scroll-behavior: smooth;
 }
 
 .best-product::-webkit-scrollbar{

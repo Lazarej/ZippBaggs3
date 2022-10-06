@@ -1,6 +1,7 @@
 <template>
   <div>
     <Presentation/>
+   <MeilleursVente/>
     <Selection/>
   </div>
 </template>

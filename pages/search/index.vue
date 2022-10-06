@@ -10,8 +10,7 @@
     </form>
     <div class="filtered-scroll-cont">
       <div class="filtered-content-cont">
-        <p class="filtered-message">{{ message }}</p>
-       
+        <p class="filtered-message">{{ message }}</p>       
         <card  v-for="(filter, id) in filters" :key="id" :link="`/produits/${filter.attributes.slug}`" :image="`url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
         :name="filter.attributes.name" :price="filter.attributes.price"></card>
       </div>

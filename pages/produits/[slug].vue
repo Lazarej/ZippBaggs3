@@ -147,6 +147,7 @@ const handleWheel = (event) => {
   const heightI = document.getElementById("image").offsetHeight;
   const mult = index.value * heightI;
   let iComp = document.getElementById("image-comp").style;
+
   if (index.value >= images.value.length - 1) {
     y < 0
       ? index.value-- &&
@@ -157,7 +158,6 @@ const handleWheel = (event) => {
       : null;
   } else if (y < 0 && index.value !== 0) {
     index.value--;
-
     progress.value =
       (100 / images.value.length) * (index.value + 2) -
       (100 / images.value.length - 1);

@@ -178,7 +178,8 @@ const formCreate = ref({
 
 onMounted( () => {
 
-  route.query.code !== undefined ? (stepForgot.value.step2 = true) && (stepForgot.value.active = true) : null
+  route.query.code !== undefined ? (stepForgot.value.step2 = true) && (stepForgot.value.active = true) : null;
+  console.log(stepForgot.value.step2)
 });
 
 const getError = (index) => {

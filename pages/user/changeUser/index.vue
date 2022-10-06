@@ -54,27 +54,13 @@
           </div>
           <div class="part-right">
             <h3>Changez votre mot de passe</h3>
-            <p>Pur cela vous devez impérativement entrer votre mot de passe actuel dans le formulaire a gauche.</p>
-            <div class="input-cont">
-            <label for="newPasswordRepeat">Repeter le nouveau mot de passe</label>
-            <input
-              id="newPasswordRepeat"
-              placeholder="Repeter le mot de passe"
-              type="password"
-              v-model="formChange.newPasswordRepeat"
-            />
-            <small
-              v-if="
-                validation.error && getError('newPasswordRepeat') !== undefined
-              "
-              >{{ getError("newPasswordRepeat").message }}</small
-            >
-          </div>
+            <p>Pour cela vous devez impérativement entrer votre mot de passe actuel dans le formulaire a gauche.</p>
+          
           <div class="input-cont">
             <label for="newPassword">Nouveau mot de passe</label>
             <input
               id="newPassword"
-              placeholder="Repeter le mot de passe"
+              placeholder="nouveau mot de passe "
               type="password"
               v-model="formChange.newPassword"
             />
@@ -83,6 +69,21 @@
                 validation.error && getError('newPassword') !== undefined
               "
               >{{ getError("newPassword").message }}</small
+            >
+          </div>
+          <div class="input-cont">
+            <label for="newPasswordRepeat">Repetez votre nouveau mot de passe</label>
+            <input
+              id="newPasswordRepeat"
+              placeholder="Repetez le mot de passe"
+              type="password"
+              v-model="formChange.newPasswordRepeat"
+            />
+            <small
+              v-if="
+                validation.error && getError('newPasswordRepeat') !== undefined
+              "
+              >{{ getError("newPasswordRepeat").message }}</small
             >
           </div>
           </div>
@@ -183,7 +184,6 @@ const  validate = async () => {
 const change = async () => {
   validate();
   try {
-        console.log('caca')
         await fetch("http://localhost:1337/api/auth/change-password", {
           headers: {
             "Content-Type": "application/json",
