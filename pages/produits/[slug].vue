@@ -112,6 +112,32 @@ const add = () => {
   console.log(slideActive.value);
 };
 
+
+
+const close = () =>{
+  slideActive.value = false
+}
+
+onMounted(() => {
+  store.loadCartInstance();
+  getProductData();
+  
+});
+
+const getProductData = async() =>{
+  const fetchData = await fetch(
+    `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
+  );
+  const json = await fetchData.json();
+  produit.value = json.data.attributes;
+  images.value = produit.value.images.data;
+  id.value = json.data.id;
+  images.value.forEach((image, index) => {
+    image.index = index;
+  });
+  progress.value = 100 / images.value.length;
+}
+
 const seeImg = (indexImg) => {
   const heightI = document.getElementById("image").offsetHeight;
   let iComp = document.getElementById("image-comp").style;
@@ -120,27 +146,6 @@ const seeImg = (indexImg) => {
   progress.value = (100 / images.value.length) * (index.value + 1);
   iComp.transform = `translateY(-${index.value * heightI}px)`;
 };
-
-const close = () =>{
-  slideActive.value = false
-}
-
-onMounted(async () => {
-  store.loadCartInstance();
-  const fetchData = await fetch(
-    `http://localhost:1337/api/produits/${route.params.slug}?populate=*`
-  );
-  const json = await fetchData.json();
-  produit.value = json.data.attributes;
-  console.log(produit.value)
-  images.value = produit.value.images.data;
-  id.value = json.data.id;
-  images.value.forEach((image, index) => {
-    image.index = index;
-  });
-
-  progress.value = 100 / images.value.length;
-});
 
 const handleWheel = (event) => {
   const y = event.deltaY;

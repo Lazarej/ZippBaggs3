@@ -1,116 +1,91 @@
 <template>
-    <div v-if="stepForgot.active" class="pop-up-forgot-password">
-        <div class="pop-up">
-            <div class="close-cont">
-      <div @click="close" class="close"></div>
-    </div>
-            <form v-if="stepForgot.step1" action="">
-                <h4>etape 1</h4>
-                <p>indiquer votre email dans le champ ci dessous</p>
-                <div class="input-cont">
-                    <label>Email</label>
-                    <input type="email" v-model="formReset.email" />
-              
-                </div>
-            </form>
-            <form v-if="stepForgot.step2" action="">
-                <h4>etape 2</h4>
-                <p>indiquer votre nouveau mot de passe ci dessous</p>
-                <div class="input-cont">
-                    <label>Mot de passe</label>
-                    <input type="password" v-model="formReset.newPassword" />
-                 
-                </div>
-                <div class="input-cont">
-                    <label>repeter le mot de passe</label>
-                    <input type="password" v-model="formReset.newPasswordRepeat" />
-                 
-                </div>
-            </form>
-            <button class="btn" @click="reset">Envoyer</button>
+  <div v-if="stepForgot.active" class="pop-up-forgot-password">
+    <div class="pop-up">
+      <div class="close-cont">
+        <div @click="close" class="close"></div>
+      </div>
+      <form v-if="stepForgot.step1" action="">
+        <h4>etape 1</h4>
+        <p>indiquer votre email dans le champ ci dessous</p>
+        <div class="input-cont">
+          <label>Email</label>
+          <input type="email" v-model="formReset.email" />
         </div>
+      </form>
+      <form v-if="stepForgot.step2" action="">
+        <h4>etape 2</h4>
+        <p>indiquer votre nouveau mot de passe ci dessous</p>
+        <div class="input-cont">
+          <label>Mot de passe</label>
+          <input type="password" v-model="formReset.newPassword" />
+        </div>
+        <div class="input-cont">
+          <label>repeter le mot de passe</label>
+          <input type="password" v-model="formReset.newPasswordRepeat" />
+        </div>
+      </form>
+      <button class="btn" @click="reset">Envoyer</button>
     </div>
-
+  </div>
 </template>
 
 <script lang="ts" setup>
-
 const route = useRoute();
 const props = defineProps({
-    stepForgot: { type: Object },
+  stepForgot: { type: Object },
 });
 
 const formReset = ref({
-    email: "",
-    newPassword: "",
-    newPasswordRepeat: ""
+  email: "",
+  newPassword: "",
+  newPasswordRepeat: "",
 });
 
-onMounted(()=>{
-   
-})
-
-const close = ()=>{
-    props.stepForgot.active = false
-}
+const close = () => {
+  props.stepForgot.active = false;
+};
 
 const reset = async () => {
-    if (props.stepForgot.step1 === true) {
-        const body = {
-            email: formReset.value.email
-        }
-        console.log(formReset.value.email)
-        await fetch("http://localhost:1337/api/auth/forgot-password", {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: JSON.stringify({ email: formReset.value.email }),
-        }).then(response => {
-            console.log(response.json(), 'Your user received an email');
-        })
-            .catch(error => {
-                console.log('An error occurred:', error.response);
-            });
-        console.log('fin')
+  if (props.stepForgot.step1 === true) {
+    try {
+      await fetch("http://localhost:1337/api/auth/forgot-password", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ email: formReset.value.email }),
+      });
+    } catch (error) {
+      console.error(error);
     }
-    if (props.stepForgot.value.step2 === true) {
-        const body = {
-            code: route.query.code,
-            password: formReset.value.newPassword,
-            passwordConfirmation: formReset.value.newPasswordRepeat
-        }
-        await fetch("http://localhost:1337/api/auth/reset-password", {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: JSON.stringify({
-                code: route.query.code,
-                password: formReset.value.newPassword,
-                passwordConfirmation: formReset.value.newPasswordRepeat
-            }),
-        }).then(response => {
-            console.log(response.json(), 'You have changed your password');
-        })
-            .catch(error => {
-                console.log('An error occurred:', error.response);
-            });
-        console.log('fin')
-
+  }
+  if (props.stepForgot.value.step2 === true) {
+    try {
+      await fetch("http://localhost:1337/api/auth/reset-password", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          code: route.query.code,
+          password: formReset.value.newPassword,
+          passwordConfirmation: formReset.value.newPasswordRepeat,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
     }
-}
-
+  }
+};
 </script>
 
 <style scoped>
-
-.pop-up-forgot-password{
+.pop-up-forgot-password {
   height: 100vh;
   width: 100vw;
   z-index: 100;
   top: 0;
-  left:0;
+  left: 0;
   position: fixed;
   background: rgba(223, 223, 223, 0.815);
   display: flex;
@@ -118,8 +93,8 @@ const reset = async () => {
   align-items: center;
 }
 
-.pop-up{
-    position: relative;
+.pop-up {
+  position: relative;
   height: 400px;
   border-radius: 5px;
   display: flex;
@@ -129,12 +104,11 @@ const reset = async () => {
   background: var(--background);
 }
 
-.pop-up form{
+.pop-up form {
   padding: 40px;
-
 }
 
-.pop-up h4{
+.pop-up h4 {
   font-size: 24px;
   margin-bottom: 20px;
   line-height: 90%;
@@ -143,7 +117,7 @@ const reset = async () => {
   text-transform: uppercase;
 }
 
-.pop-up p{
+.pop-up p {
   font-family: "Montserrat";
   font-size: 14px;
   letter-spacing: -1px;
@@ -152,11 +126,11 @@ const reset = async () => {
   margin-bottom: 30px;
 }
 
-
-.pop-up .input-cont{
+.pop-up .input-cont {
   background: var(--background);
 }
-.pop-up .btn{
+
+.pop-up .btn {
   width: 300px;
   font-size: 14px;
 }
@@ -197,9 +171,9 @@ const reset = async () => {
 }
 
 .close-cont {
-    position: absolute;
-    left: 5px;
-    top: 5px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
   display: flex;
   justify-content: flex-end;
   align-items: center;

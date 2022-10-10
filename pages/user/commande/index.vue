@@ -65,7 +65,12 @@ onBeforeMount(() => {
   }
 });
 
-onMounted(async () => {
+onMounted(() => {
+getCommande();
+
+});
+
+const getCommande = async()=>{
   const data = await fetch(
     "http://localhost:1337/api/users/me?populate[commandes][populate][produits][populate]=images",
     {
@@ -78,10 +83,8 @@ onMounted(async () => {
   );
 
   const response = await data.json();
-  console.log(store.user);
   commandes.value = response.commandes;
-  console.log(commandes.value)
-});
+}
 </script>
 
 <style scoped>

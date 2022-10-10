@@ -108,13 +108,13 @@ const buy = async (e) => {
   });
 
   if (storeU.user.login === true && displayCart.value.length !== 0) {
-    console.log(displayCart.value)
     const body = {
       cartDetail: displayCart.value,
       cartTotal: total2,
     };
 
-    const response = await fetch("http://localhost:1337/api/orders", {
+    try {
+      const orderResponse = await fetch("http://localhost:1337/api/orders", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${storeU.user.token}`,
@@ -122,27 +122,17 @@ const buy = async (e) => {
       method: "POST",
       body: JSON.stringify(body),
     })
-    .then((response) => {
-      if (response.ok) {
-        response.json().then(async (responseJSON) => {
-          console.log(responseJSON);
-          const stripePromise = loadStripe('pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9');
-          const session = responseJSON;
+    const order = await orderResponse.json()
+    const stripePromise = loadStripe('pk_test_51LdZrPLJW5eIdnsGHJ2J2Ak91mv9p2Un102AhWlceZ5pFMGBcoPWpjgSuo5Vh2ivWzQIViJLsXjlw8yxJe0bmUL400AQJD2bZ9');
+          const session = order;
           const stripe = await stripePromise;
           const result = await stripe.redirectToCheckout({
             sessionId: session.id,
           });
-          if (result.error) {
-            console.log(result.error.message);
-          } 
-        });
-      }
-    }).catch(e => {
-      if(e.status === 400){
-        console.log(e)
-      }
-    });
     /**/
+    } catch (error) {
+      console.error(error)
+    }
   } else {
     router.push({ path: "/auth" });
   }
@@ -152,11 +142,11 @@ const checkPath = async  () => {
   if(route.query.success){
     const number =  store.cart.cId.slice(0,8)
     displayCart.value.forEach(async(i)=>{
-    console.log(i.reste)
     const body = {
       quantity: i.reste
     }
-      const data = await fetch(
+      try {
+        const data = await fetch(
          `http://localhost:1337/api/produits/${i.id}`,
         {
           headers: {
@@ -165,7 +155,10 @@ const checkPath = async  () => {
           method: "PUT",
           body: JSON.stringify({data: body}),
         }
-      ).then((response) => console.log(response.json()))
+      )
+      } catch (error) {
+        console.error(error)
+      }
     })
     const body = {
        uid: number,
@@ -191,7 +184,7 @@ const checkPath = async  () => {
       total2.value = 0;
 
     } catch (error) {
-       console.log(error)
+       console.error(error)
     }
    
   }else if(route.query.canceled){

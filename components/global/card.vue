@@ -1,5 +1,5 @@
 <template>
-  <div class="card-produit" :style="{minWidth: width,height: height}">
+  <div class="card-produit" :style="{minWidth: width,height: height, margin: margin}">
           <nuxt-link tag="a" :to="link">
             <div class="card-image-cont">
               <div
@@ -26,7 +26,8 @@
        name: String,
        price: Number,
        width: String,
-       height:String
+       height:String,
+       margin: String
   })
 
 </script>

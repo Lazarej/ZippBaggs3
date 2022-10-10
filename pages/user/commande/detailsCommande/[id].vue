@@ -128,7 +128,20 @@ const { user } = storeToRefs(store);
 const details = ref({});
 const produits = ref([]);
 
-onMounted(async () => {
+onBeforeMount(() => {
+  store.loadUserInstance();
+  if (store.user.login === false || store.user.login === undefined) {
+    return navigateTo({ path: "/auth" });
+  } else {
+  }
+});
+
+onMounted(() => {
+  getCommande();
+
+});
+
+const getCommande = async()=>{
   const fetchData = await fetch(
     `http://localhost:1337/api/commandes/${route.params.id}?populate[produits][populate]=images`,
     {
@@ -139,10 +152,10 @@ onMounted(async () => {
     }
   );
   const json = await fetchData.json();
+  console.log(json)
   details.value = json.data.attributes;
   produits.value = details.value.produits.data;
-  console.log(produits.value);
-});
+}
 </script>
 
 <style lang="css" scoped>

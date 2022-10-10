@@ -72,17 +72,18 @@ const test = ref(false)
 
 let saveArr = [];
 
-onMounted(async () => {
+onMounted(() => {
+ getData();
+});
+
+const getData = async()=>{
   const fetchData = await fetch(
     `http://localhost:1337/api/categories/${route.params.id}?populate[produits][populate]=images`
   );
   const json = await fetchData.json();
   categorie.value = json.data.attributes;
   produits.value = categorie.value.produits.data;
-  console.log(produits.value);
-
-
-});
+}
 
 
 const colors = (event) => {

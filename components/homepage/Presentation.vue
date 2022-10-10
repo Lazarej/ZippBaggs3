@@ -1,5 +1,5 @@
 <template>
-  <section class="presentation">
+  <section class="presentation" id="vitrineSection">
     <div class="text-pres-container">
       <div class="text-link-cont">
         <h2>Choisi ton packson</h2>

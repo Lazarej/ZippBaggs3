@@ -64,6 +64,7 @@
   *{
       margin: 0;
       cursor: url('../img/mouse.png'), auto;
+      scroll-behavior: smooth;
       
   }
 

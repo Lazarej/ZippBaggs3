@@ -15,10 +15,10 @@ export const userStore = defineStore("user", {
 
   actions: {
     async loadUserInstance() {
-      console.log("load");
       const us = localStorage.getItem("user");
-      if (!us) this.user = console.log("no storageuser ");
+      if (!us) this.user = {};
       else this.user = JSON.parse(us);
+
       const data = await fetch(
         "http://localhost:1337/api/users/me?populate=* ",
         {
@@ -40,81 +40,76 @@ export const userStore = defineStore("user", {
       cartStore.loadCartInstance();
 
       try {
-        await fetch("http://localhost:1337/api/auth/local", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            identifier: email,
-            password: password,
-          }),
-        }).then((response) => {
-          if (response.ok) {
-            response.json().then(async (responseJSON) => {
-              console.log(responseJSON);
-              const cartStore = useCartStore();
-              const data = await fetch(
-                "http://localhost:1337/api/users/me?populate[cart][populate]=copies",
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${responseJSON.jwt}`,
-                  },
-                  method: "GET",
-                }
-              );
-              const dataRes = await data.json();
-              console.log(dataRes);
-              if (dataRes.cart === null) {
-                (this.user as User) = {
-                  token: responseJSON.jwt,
-                  username: dataRes.username,
-                  id: dataRes.id,
-                  email: dataRes.email,
-                  login: true,
-                  adresse: dataRes.address,
-                  cart: {
-                    cId: cartStore.cart.cId,
-                    products: cartStore.cart.products,
-                  },
-                };
-              } else {
-                console.log("cart pas egal a null", dataRes);
-                let ids = new Set(
-                  cartStore.cart.products.map((d: { id: any }) => d.id)
-                );
-                (this.user as User) = {
-                  token: responseJSON.jwt,
-                  username: dataRes.username,
-                  id: dataRes.id,
-                  email: dataRes.email,
-                  login: true,
-                  adresse: dataRes.address,
-                  cart: {
-                    cId: dataRes.cart.uid,
-                    products: [
-                      ...cartStore.cart.products,
-                      ...dataRes.cart.copies.filter(
-                        (d: { id: unknown }) => !ids.has(d.idOfProduct)
-                      ),
-                    ],
-                  },
-                };
-              }
-              console.log(this.user);
-
-              localStorage.setItem("user", JSON.stringify(this.user));
-              cartStore.mutation();
-              router.push({ path: "/user" });
-            });
-          } else {
-            console.log("error");
+        const AuthResponses = await fetch(
+          "http://localhost:1337/api/auth/local",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+              identifier: email,
+              password: password,
+            }),
           }
-        });
+        );
+        const auth = await AuthResponses.json();
 
-        console.log(localStorage.getItem("user"));
-      } catch (error) {}
+        const copiesResponses = await fetch(
+          "http://localhost:1337/api/users/me?populate[cart][populate]=copies",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.jwt}`,
+            },
+            method: "GET",
+          }
+        );
+        const copies = await copiesResponses.json();
+
+        if (copies.cart === null) {
+          (this.user as User) = {
+            token: auth.jwt,
+            username: copies.username,
+            id: copies.id,
+            email: copies.email,
+            login: true,
+            adresse: copies.address,
+            cart: {
+              cId: cartStore.cart.cId,
+              products: cartStore.cart.products,
+            },
+          };
+        } else {
+          let ids = new Set(
+            cartStore.cart.products.map((d: { id: any }) => d.id)
+          );
+
+          (this.user as User) = {
+            token: auth.jwt,
+            username: copies.username,
+            id: copies.id,
+            email: copies.email,
+            login: true,
+            adresse: copies.address,
+            cart: {
+              cId: copies.cart.uid,
+              products: [
+                ...cartStore.cart.products,
+                ...copies.cart.copies.filter(
+                  (d: { id: unknown }) => !ids.has(d.idOfProduct)
+                ),
+              ],
+            },
+          };
+        }
+
+        localStorage.setItem("user", JSON.stringify(this.user));
+        cartStore.mutation();
+        router.push({ path: "/user" });
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     async create(formCreate: {
@@ -133,7 +128,7 @@ export const userStore = defineStore("user", {
         adresse: formCreate.adresse,
       };
       try {
-        const data = await fetch(
+        const registerResponses = await fetch(
           "http://localhost:1337/api/auth/local/register",
           {
             headers: {
@@ -142,32 +137,25 @@ export const userStore = defineStore("user", {
             method: "POST",
             body: JSON.stringify(body),
           }
-        ).then((response) => {
-          if (response.ok) {
-            response.json().then((responseJSON) => {
-              console.log(responseJSON, "ok");
-              (this.user as User) = {
-                token: responseJSON.jwt,
-                username: responseJSON.user.username,
-                id: responseJSON.user.id,
-                email: responseJSON.user.email,
-                login: true,
-                adresse: responseJSON.user.adresse,
-                cart: {
-                  cId: cartStore.cart.uid,
-                  products: cartStore.cart.products,
-                },
-              };
-              localStorage.setItem("user", JSON.stringify(this.user));
-          router.push({path:'/'})
-          console.log(this.user);
-            });
-
-           
-          }
-        });
+        );
+        const register = await registerResponses.json();
+        console.log(register);
+        (this.user as User) = {
+          token: register.jwt,
+          username: register.user.username,
+          id: register.user.id,
+          email: register.user.email,
+          login: true,
+          adresse: register.user.adresse,
+          cart: {
+            cId: cartStore.cart.uid,
+            products: cartStore.cart.products,
+          },
+        };
+        localStorage.setItem("user", JSON.stringify(this.user));
+        router.push({ path: "/" });
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
 
@@ -200,105 +188,122 @@ export const userStore = defineStore("user", {
       }
     },
 
-    async logout(productData: any) {
+    async logout() {
       const cartStore = useCartStore();
       cartStore.loadCartInstance();
       let productId = [];
 
       cartStore.cart.products.map(async (p: Product) => {
-        console.log(p);
         if (p.hasOwnProperty("idOfProduct")) {
           const body = {
             qty: p.qty,
           };
 
-          const putCopies = await fetch(
-            `http://localhost:1337/api/copies/${p.id}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.user.token}`,
-              },
-              method: "PUT",
-              body: JSON.stringify({ data: body }),
-            }
-          ).then((response) => {
-            if (response.ok) {
-              response.json().then(async (responseJSON) => {
-                console.log(responseJSON.data.id);
-                productId.push(responseJSON.data.id);
-              });
-            }
-          });
+          try {
+            const putCopiesResponses = await fetch(
+              `http://localhost:1337/api/copies/${p.id}`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${this.user.token}`,
+                },
+                method: "PUT",
+                body: JSON.stringify({ data: body }),
+              }
+            );
+            const putCopies = await putCopiesResponses.json();
+            productId.push(putCopies.data.id);
+          } 
+          catch (error) {
+            console.error(error);
+          }
         } else {
           const body = {
             idOfProduct: p.id,
             qty: p.qty,
           };
 
-          const postCopies = await fetch("http://localhost:1337/api/copies", {
+          try {
+            const postCopiesResponses = await fetch(
+              "http://localhost:1337/api/copies",
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${this.user.token}`,
+                },
+                method: "POST",
+                body: JSON.stringify({ data: body }),
+              }
+            );
+            const postCopies = await postCopiesResponses.json();
+            
+            productId.push(postCopies.data.id);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      });
+      try {
+        const cart = await fetch(
+          "http://localhost:1337/api/users/me?populate[cart][populate]",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.user.token}`,
+            },
+            method: "GET",
+          }
+        );
+        const cartData = await cart.json();
+        console.log(cartData)
+        if (cartData.cart === null) {
+          console.log(productId) 
+          const body = {
+            uid: cartStore.cart.cId,
+            copies: productId,
+            users_permissions_user: this.user.id,
+          };
+  
+        try {
+          await fetch("http://localhost:1337/api/carts", {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${this.user.token}`,
             },
             method: "POST",
             body: JSON.stringify({ data: body }),
-          }).then((response) => {
-            if (response.ok) {
-              response.json().then(async (responseJSON) => {
-                productId.push(responseJSON.data.id);
-              });
-            }
           });
-        }
-      });
-      const cart = await fetch(
-        "http://localhost:1337/api/users/me?populate[cart][populate]",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.user.token}`,
-          },
-          method: "GET",
-        }
-      );
-      const cartData = await cart.json();
-      if (cartData.cart === null) {
-        console.log(productId, "ca ne contient pas cart");
-        const body = {
-          uid: cartStore.cart.cId,
-          copies: productId,
-          users_permissions_user: this.user.id,
-        };
-
-        const data = await fetch("http://localhost:1337/api/carts", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.user.token}`,
-          },
-          method: "POST",
-          body: JSON.stringify({ data: body }),
-        });
-      } else {
-        console.log(productId, "ca contient cart");
-        const body = {
-          uid: cartStore.cart.cId,
-          copies: productId,
-          users_permissions_user: this.user.id,
-        };
-
-        const data = await fetch(
-          `http://localhost:1337/api/carts/${cartData.cart.id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.user.token}`,
-            },
-            method: "PUT",
-            body: JSON.stringify({ data: body }),
+         } catch (error) {
+          console.error(error)
+         }
+        } else {
+          console.log(productId) 
+          const body = {
+            uid: cartStore.cart.cId,
+            copies: productId,
+            users_permissions_user: this.user.id,
+          };
+  
+          try {
+            await fetch(
+              `http://localhost:1337/api/carts/${cartData.cart.id}`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${this.user.token}`,
+                },
+                method: "PUT",
+                body: JSON.stringify({ data: body }),
+              }
+            );
+          } catch (error) {
+            console.error(error)
           }
-        );
+        }
+      } catch (error) {
+        console.error(error)
       }
+      
       this.user = {
         token: null,
         username: null,
