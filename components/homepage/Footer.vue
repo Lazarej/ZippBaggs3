@@ -149,4 +149,16 @@ const props = defineProps({
 .go-upside:hover svg path{
     fill: var(--background);
 }
+
+@media (max-width: 500px) {
+    .column-cont{
+        flex-wrap: wrap;
+
+    }
+
+    .column{
+        width: 49%;
+        height: auto;
+    }
+}
 </style>

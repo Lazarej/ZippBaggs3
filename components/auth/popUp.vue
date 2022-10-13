@@ -10,8 +10,10 @@
         <div class="input-cont">
           <label>Email</label>
           <input type="email" v-model="formReset.email" />
+          <p v-if="!stepForgot.step2Complete" class="step-complete">{{message}}</p>
         </div>
       </form>
+      <p v-if="stepForgot.step1Complete" class="step-complete">{{message}}</p>
       <form v-if="stepForgot.step2" action="">
         <h4>etape 2</h4>
         <p>indiquer votre nouveau mot de passe ci dessous</p>
@@ -22,9 +24,11 @@
         <div class="input-cont">
           <label>repeter le mot de passe</label>
           <input type="password" v-model="formReset.newPasswordRepeat" />
+          <p v-if="!stepForgot.step2Complete" class="step-complete">{{message}}</p>
         </div>
       </form>
-      <button class="btn" @click="reset">Envoyer</button>
+      <p v-if="stepForgot.step2Complete" class="step-complete">{{message}}</p>
+      <button v-if="stepForgot.step1 || stepForgot.step2" class="btn" @click="reset">Envoyer</button>
     </div>
   </div>
 </template>
@@ -41,6 +45,8 @@ const formReset = ref({
   newPasswordRepeat: "",
 });
 
+const message = ref('');
+
 const close = () => {
   props.stepForgot.active = false;
 };
@@ -48,20 +54,28 @@ const close = () => {
 const reset = async () => {
   if (props.stepForgot.step1 === true) {
     try {
-      await fetch("http://localhost:1337/api/auth/forgot-password", {
+      const data = await fetch("http://localhost:1337/api/auth/forgot-password", {
         headers: {
           "Content-Type": "application/json",
         },
         method: "POST",
         body: JSON.stringify({ email: formReset.value.email }),
       });
+      if(data.ok){
+      props.stepForgot.step1 = false
+      props.stepForgot.step1Complete = true
+      message.value = 'Nous vous avons envoyer un email'
+      }else{
+        message.value = 'Votre email est invalide'
+      }
+     
     } catch (error) {
       console.error(error);
     }
   }
-  if (props.stepForgot.value.step2 === true) {
+  if (props.stepForgot.step2 === true) {
     try {
-      await fetch("http://localhost:1337/api/auth/reset-password", {
+      const data = await fetch("http://localhost:1337/api/auth/reset-password", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -72,6 +86,13 @@ const reset = async () => {
           passwordConfirmation: formReset.value.newPasswordRepeat,
         }),
       });
+      if(data.ok){
+      props.stepForgot.step2 = false
+      props.stepForgot.step2Complete = true
+      message.value = 'Votre mot de passe est changé'
+      }else{
+        message.value = 'Votre mot de passe est invalide'
+      }
     } catch (error) {
       console.error(error);
     }
@@ -99,6 +120,7 @@ const reset = async () => {
   border-radius: 5px;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-direction: column;
   width: 400px;
   background: var(--background);

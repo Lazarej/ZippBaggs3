@@ -1,5 +1,5 @@
 <template>
-  <div class="card-produit" :style="{minWidth: width,height: height, margin: margin}">
+  <div class="card-produit" :style="{minWidth: width,minHeight: height, margin: margin}">
           <nuxt-link tag="a" :to="link">
             <div class="card-image-cont">
               <div
@@ -75,5 +75,12 @@
 
 .card-produit:nth-of-type(4n) {
   margin-right: 0;
+}
+
+@media (max-width: 600px) {
+    .card-produit{
+      width: 44% !important;
+      height: 300px !important;
+    }
 }
 </style>

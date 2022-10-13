@@ -1,13 +1,13 @@
 <template>
   <div>
-      <NavBar/>
+      <NavBar></NavBar>
+
+      
     <slot />
   </div>
 </template>
 
-<script>
+<script setup>
 import NavBar from "../components/global/navbar/NavBar.vue";
-export default {
-  components: { NavBar },
-}
+
 </script>

@@ -3,7 +3,7 @@
     <h2>Nos meilleurs ventes</h2>
     <div class="best-product-cont">
       <div class="best-product">
-        <Card v-for="(bestProduct,id) in bestProducts" :key="id" :height="'80%'" :width="'300px'" :margin="'0 0.6% 0px 0.6%'"
+        <Card v-for="(bestProduct,id) in bestProducts" :key="id" :height="'500px'" :width="'300px'" :margin="'0 0.6% 0px 0.6%'"
           :link="`/produits/${bestProduct.attributes.slug}`"
           :image="`url(http://localhost:1337${bestProduct.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
           :name="bestProduct.attributes.name" :price="bestProduct.attributes.price"></Card>
@@ -40,19 +40,19 @@ const bestProduct = () => {
 
 <style lang="css" scoped>
 .meilleurs-vente {
-  height: 100vh;
+  height: 80vh;
   width: 93%;
   padding: 0% 0px 0px 7%;
 }
 
 .meilleurs-vente h2 {
-  margin-bottom: 80px;
-  margin-top: 50px;
+  margin-bottom: 60px;
+  margin-top: 80px;
 }
 
 .best-product-cont {
   display: flex;
-  height: 500px;
+  height: 550px;
   width: 100%;
 }
 
@@ -73,14 +73,7 @@ const bestProduct = () => {
   margin-right: 30px;
 }
 
-.best-product-card {
-  display: flex;
-  margin-right: 10px;
-  flex-direction: column;
-  height: 90%;
-  min-width: 300px;
-  overflow: hidden;
-}
+
 
 .card-image {
   width: 100%;

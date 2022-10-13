@@ -121,7 +121,7 @@
         </button>
         <button v-else class="btn" @click="send">Inscrivez vous</button>
       </div>
-      <div v-if="login === true" class="changer">
+      <div v-if="login === true" class="change">
         <h4>Crée un compte</h4>
         <p>
           Si vous n'avez pas encore de compte vous devez vous inscrire pour avec
@@ -129,7 +129,7 @@
         </p>
         <button class="btn" @click="login = false">Crée un compte</button>
       </div>
-      <div v-else class="changer">
+      <div v-else class="change">
         <h4>Se connecter</h4>
         <p>
           Si vous avez deja un compte connecter vous pour pouvoir achetez nos
@@ -154,7 +154,9 @@ const login = ref(true);
  const stepForgot = ref({
   active:false,
   step1: false,
+  step1Complete:false,
   step2:false,
+  step2Complete:false,
   step3: false
  })
 const validation = ref({
@@ -335,13 +337,13 @@ const send =  () => {
   line-height: -50px;
 }
 
-.changer {
+.change {
   display: flex;
   flex-direction: column;
   margin: 24vh 13vw 0 0;
   width: 350px;
 }
-.changer h4 {
+.change h4 {
   font-size: 24px;
   margin-bottom: 20px;
   line-height: 90%;
@@ -349,7 +351,7 @@ const send =  () => {
   color: var(--title);
   text-transform: uppercase;
 }
-.changer p {
+.change p {
   font-family: "Montserrat";
   font-size: 14px;
   letter-spacing: -1px;
@@ -372,6 +374,36 @@ const send =  () => {
   height: 30px;
   background: url("../../assets/svg/close.svg") center center / 30px;
   margin-right: 30px;
+}
+
+@media (max-width: 600px) {
+  .auth-cont{
+    flex-direction: column;
+    
+    justify-content: initial;
+  }
+
+  .auth-page{
+    height: auto;
+  }
+
+  .change{
+   margin-top: 30px;
+  }
+
+  .change p{
+   display: none;
+  }
+
+  .change h4{
+   display: none;
+  }
+
+  
+
+  .form-create{
+    flex-direction: column;
+  }
 }
 
 </style>

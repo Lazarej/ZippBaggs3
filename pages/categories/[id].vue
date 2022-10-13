@@ -212,4 +212,18 @@ const price = (event) => {
   color: #c7cec5;
   transform: translate(-50%, -50%);
 }
+
+@media (max-width: 600px) {
+  .cat-header h2{
+    font-size: 58px;
+  }
+
+  .cat-header h2:nth-child(2){
+    top: 15%;
+  }
+
+  .filter-row{
+    margin-left: 3.2%;
+  }
+}
 </style>

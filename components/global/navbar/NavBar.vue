@@ -26,7 +26,7 @@
           <h2 class="nav-title">ZippBaggs</h2>
         </nuxt-link>
       </div>
-      <div class="svg-container">
+      <div v-if="responsive" class="svg-container">
         <nuxt-link to="/search">
           <div class="nav-svg search"></div>
         </nuxt-link>
@@ -39,15 +39,15 @@
         <nuxt-link to="/cart">
           <div class="nav-svg bagg"></div>
         </nuxt-link>
-        <p v-if="user.login === true" @click="logout" class="logout">déconnexion</p>
+        <p v-if="user.login === true" @click="logout" class="log">déconnexion</p>
       </div>
     </div>
-    <div class="nav-bar-under" :class="{ 'nav-active-1': navActive }">
+    <div v-if="responsive" class="nav-bar-under" :class="{ 'nav-active-1': navActive }">
       <div class="under-content-container">
         <div class="column-container">
           <div
             class="nav-categories-colum"
-            v-for="(categorie, id) in categories"
+            v-for="(categorie, id) in categories.data"
             :key="id"
             @mouseenter="showCategorieImg(categorie)"
             @mouseleave="hiddenCategorieImg"
@@ -75,6 +75,43 @@
         </div>
       </div>
     </div>
+    <div v-else class="responsive-content" :class="{ 'nav-active-1': navActive }">
+      <div @click="toggle" class="close"></div>
+      <div class="content-cont">
+         <ul class="categories-cont">
+          <div class="user-link">
+            <nuxt-link to="/search">
+              <div class="nav-svg search"></div>
+              <p>Rechercher</p>
+            </nuxt-link>
+          </div>
+          <div class="user-link">
+            <nuxt-link to="/auth">
+              <div class="nav-svg account"></div>
+              <p>Mon compte</p>
+            </nuxt-link>
+          </div>
+          <div class="user-link">
+            <nuxt-link to="/cart">
+              <div class="nav-svg bagg"></div>
+              <p>Panier</p>
+            </nuxt-link>
+          </div>
+          <h5>Produits</h5>
+          <li v-for="(categorie, id) in categories.data"
+            :key="id"><nuxt-link :to="`/categories/${categorie.id}`">{{categorie.attributes.name}}</nuxt-link></li>
+         </ul>
+         <ul>
+          <li v-for="(product, i ) in responsiveProducts " :key="i"></li>
+         </ul>
+         <div class="logout-cont">
+          <p v-if="user.login === true" class="log" @click="logout" >Deconnexion</p>
+          <nuxt-link v-else to="/auth">
+            <p class="log">Connexion</p>
+          </nuxt-link>
+         </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -91,29 +128,42 @@ const showSlide = ref(false);
 const imageBack = ref(false);
 const delayTransition = ref(300);
 const categories = ref([]);
+let responsive = ref(false)
+let responsiveProducts = ref([])
 
 
-const { data: grabData } = await useFetch(
-  "http://localhost:1337/api/produits/?populate=*"
-);
-const productData = grabData.value.data;
 
-onMounted(async () => {
-  await store.loadUserInstance();
-  const { data: response } = await useFetch(
-    "http://localhost:1337/api/categories?populate=*"
-  );
-  categories.value = response._rawValue.data; 
+onMounted( () => {
+   store.loadUserInstance();
+   getData();
+  if(screen.width >= 600){
+    responsive.value = true
+  }
+  
 });
 
-function toggle() {
+watch(()=> useRoute().path, ()=>{
+  navActive.value = false;
+} )
+
+const getData = async()=>{
+  try{
+    const response = await fetch(
+    "http://localhost:1337/api/categories?populate=*"
+  );
+  categories.value = await response.json(); 
+  }catch(error){
+
+  }
+}
+
+const  toggle = () => {
   navActive.value = !navActive.value;
-  console.log(navActive.value);
   showImage.value = false;
 }
 
 const logout = () => {
-  store.logout(productData);
+  store.logout();
   router.push({ path: '/' })
 };
 
@@ -137,6 +187,12 @@ const  hiddenCategorieImg = () => {
 </script>
 
 <style lang="css" scoped>
+
+a{
+  text-decoration: none;
+  color: var(--title);
+}
+
 .nav-bar {
   position: fixed;
   display: flex;
@@ -254,7 +310,7 @@ const  hiddenCategorieImg = () => {
   cursor: pointer;
 }
 
-.logout {
+.log {
   font-size: 16px;
   font-family: "Roboto";
   text-transform: uppercase;
@@ -375,5 +431,127 @@ const  hiddenCategorieImg = () => {
 .slide-enter,
 .slide-leave-to {
   width: 100%;
+}
+
+@media (max-width: 600px) {
+
+  .nav-bar-header{
+    justify-content:initial;
+    position: relative;
+  }
+
+  .nav-aligner{
+    width: auto;
+
+  }
+
+  .nav-title-container{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+  }
+  
+
+.nav-title{
+  font-size: 25px ;
+}
+
+.burger-line{
+  height: 3px;
+  width: 30px;
+}
+
+.responsive-content{
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  left: -100%;
+  background: var(--background);
+  transition:0.3s
+}
+
+.nav-active-1{
+  left: 0;
+}
+
+.close{
+  height: 30px;
+  width: 30px;
+  margin: 10px 0 0 10px;
+  background: url('@/assets/svg/close.svg') center center / 30px no-repeat;
+}
+
+.content-cont{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: calc(100% - 30px);
+}
+
+
+
+.content-cont h5{ 
+  text-transform: uppercase;
+  font-family: 'Nimbus';
+  font-size: 22px;
+  color: var(--title);
+  margin: 40px 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom:1px solid #eaedea;
+}
+
+.categories-cont{
+  margin-top: 15%;
+  padding: 0 10% 0 10%;
+}
+
+.categories-cont li { 
+  list-style: none;
+  margin: 10px 0px 10px 10px;
+  text-transform: uppercase;
+  font-family: 'Nimbus';
+  font-size: 20px;
+  color: var(--title);
+  
+}
+
+.user-link{
+  border-bottom:1px solid #eaedea;
+  padding:5px 0 5px 0;
+}
+.user-link a{
+ display: flex;
+ text-transform: uppercase;
+  font-family: 'Nimbus';
+  align-items: center;
+  
+}
+
+.user-link a p{
+ line-height: 40px;
+ margin-left:10px;
+ font-size: 20px;
+}
+
+.nav-svg{
+  height: 28px;
+  width: 28px;
+}
+
+.logout-cont{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 15%;
+}
+
+.log{
+  font-size: 20px;
+  margin: 0;
+}
+
 }
 </style>

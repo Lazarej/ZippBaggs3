@@ -358,13 +358,44 @@ const handleWheel = (event) => {
   border: none;
 }
 
-
-
 .slide {
   right: 0;
 }
 .v-enter-from,
 .v-leave-to {
   right: -30%;
+}
+
+@media (max-width: 600px) {
+
+  .prod-page{
+    flex-direction: column;
+    height: auto;
+  }
+
+  .part-left{
+    width: 100%;
+    flex-direction: column-reverse;
+    margin-bottom: 20px;
+    height: 75vh;
+  }
+
+  .part-right{
+    height: auto;
+    margin-bottom: 30px;
+  }
+
+  .text-for-product{
+    display: none;
+  }
+
+  .name{
+    font-size: 30px;
+    margin-bottom:10px;
+  }
+
+  .multi-select{
+    margin-bottom: 20px;
+  }
 }
 </style>

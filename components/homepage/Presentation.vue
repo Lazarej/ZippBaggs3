@@ -101,7 +101,7 @@ text-transform: uppercase;
 }
 
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
 
   .presentation{
     flex-direction: column;
@@ -128,6 +128,10 @@ text-transform: uppercase;
   line-height: 70px;
   letter-spacing: -0.03em;
   text-transform: uppercase;
+}
+
+.d-container{
+  width: 100%;
 }
 
 .d-image{

@@ -11,7 +11,7 @@
     <div class="filtered-scroll-cont">
       <div class="filtered-content-cont">
         <p class="filtered-message">{{ message }}</p>       
-        <card  v-for="(filter, id) in filters" :key="id" :link="`/produits/${filter.attributes.slug}`" :image="`url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
+        <card v-for="(filter, id) in filters" :key="id" :link="`/produits/${filter.attributes.slug}`" :image="`url(http://localhost:1337${filter.attributes.images.data[0].attributes.url}) center /cover no-repeat`"
         :name="filter.attributes.name" :price="filter.attributes.price"></card>
       </div>
     </div>
@@ -23,11 +23,13 @@ import Card from '~~/components/global/card.vue';
 export default {
     setup() {
         const searchText = ref("");
+
         const produits = ref([]);
         const filters = ref([]);
         const test = ref("test");
         const message = ref("");
         const URL = "http://localhost:1337/api/produits?filters[slug][$contains]=";
+
         watch(() => searchText.value, async (old, notOld) => {
             if (searchText.value.length !== 0) {
                 const grabData = await fetch(URL + searchText.value + "&populate=images");
@@ -47,7 +49,9 @@ export default {
         });
         return { filters, searchText, produits, URL, test, message };
     },
-    components: { Card }
+
+    components: { Card },
+
 };
 </script>
 

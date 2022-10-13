@@ -16,7 +16,7 @@ export const userStore = defineStore("user", {
   actions: {
     async loadUserInstance() {
       const us = localStorage.getItem("user");
-      if (!us) this.user = {};
+      if (!us) console.log('dzdz');
       else this.user = JSON.parse(us);
 
       const data = await fetch(
@@ -153,6 +153,7 @@ export const userStore = defineStore("user", {
           },
         };
         localStorage.setItem("user", JSON.stringify(this.user));
+        console.log(localStorage.getItem("user"))
         router.push({ path: "/" });
       } catch (error) {
         console.error(error);
